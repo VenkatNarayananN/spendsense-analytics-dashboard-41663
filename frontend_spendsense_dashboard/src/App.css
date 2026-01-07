@@ -1,31 +1,79 @@
-/* SpendSense - Ocean Professional (Elegant) global styling */
+/* SpendSense - Modern Fintech (Ocean Professional tuned)
+   - Crisp card surfaces, soft gradient headers, refined typography
+   - Subtle neumorphic shadows, hover/active states, strong focus rings
+   - Consistent spacing scale + form controls
+   - Reusable empty/loading states
+*/
 
+/* ---- Theme Tokens ---- */
 :root {
-  /* Ocean Professional tokens */
-  --ss-primary: #F472B6;
-  --ss-secondary: #F59E0B;
-  --ss-success: #10B981;
-  --ss-error: #EF4444;
+  /* Accents (keep) */
+  --primary: #F472B6;
+  --secondary: #F59E0B;
+  --success: #10B981;
+  --error: #EF4444;
 
-  --ss-text: #374151;
-  --ss-muted: rgba(55, 65, 81, 0.68);
+  /* Fintech neutrals */
+  --bg: #FDF2F8;               /* base from existing palette */
+  --surface: rgba(255, 255, 255, 0.78);
+  --surface-strong: #FFFFFF;
+  --text: #111827;
+  --muted: rgba(17, 24, 39, 0.62);
+  --border: rgba(17, 24, 39, 0.12);
 
-  --ss-bg: #FDF2F8;
-  --ss-surface: #FFFFFF;
+  /* Gradients */
+  --gradient-start: #FFF1F2; /* rose-50 */
+  --gradient-end: #FAE8FF;   /* purple-50 */
+  --header-glow:
+    radial-gradient(1000px 450px at 10% 10%, rgba(244, 114, 182, 0.18), transparent 58%),
+    radial-gradient(900px 420px at 90% 20%, rgba(245, 158, 11, 0.12), transparent 58%);
 
-  --ss-border: rgba(55, 65, 81, 0.14);
+  /* Shadows (subtle neumorphism) */
+  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06), 0 8px 24px rgba(17, 24, 39, 0.06);
+  --shadow-md: 0 12px 34px rgba(17, 24, 39, 0.12);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.60);
 
-  --ss-radius-sm: 10px;
-  --ss-radius-md: 14px;
-  --ss-radius-lg: 18px;
+  /* Radius */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
 
-  --ss-shadow-sm: 0 10px 24px rgba(17, 24, 39, 0.08);
-  --ss-shadow: 0 18px 44px rgba(17, 24, 39, 0.12);
+  /* Focus */
+  --focus: 0 0 0 3px rgba(244, 114, 182, 0.35), 0 0 0 1px rgba(17, 24, 39, 0.10);
 
-  /* Focus ring */
-  --ss-focus: rgba(244, 114, 182, 0.45);
-  --ss-focus-soft: rgba(244, 114, 182, 0.18);
+  /* Spacing scale */
+  --space-1: 6px;
+  --space-2: 10px;
+  --space-3: 14px;
+  --space-4: 18px;
+  --space-5: 24px;
+
+  --sidebar-w: 268px;
+  --alerts-w: 328px;
 }
+
+/* Dark theme kept working */
+[data-theme="dark"] {
+  --bg: #0A1020;
+  --surface: rgba(15, 23, 42, 0.72);
+  --surface-strong: #0F172A;
+  --text: #E5E7EB;
+  --muted: rgba(229, 231, 235, 0.62);
+  --border: rgba(229, 231, 235, 0.14);
+
+  --gradient-start: #0A1020;
+  --gradient-end: #151A33;
+  --header-glow:
+    radial-gradient(1000px 450px at 10% 10%, rgba(244, 114, 182, 0.14), transparent 58%),
+    radial-gradient(900px 420px at 90% 20%, rgba(245, 158, 11, 0.10), transparent 58%);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.34), 0 10px 30px rgba(0, 0, 0, 0.38);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.42);
+  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---- Base ---- */
+* { box-sizing: border-box; }
 
 html,
 body,
