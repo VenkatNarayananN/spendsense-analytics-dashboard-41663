@@ -82,7 +82,11 @@ export function AlertsPage() {
       <Card
         title="Alerts"
         subtitle="Anomaly and policy notifications (mock)"
-        action={<Button variant="ghost" size="sm">Mark all as read</Button>}
+        action={
+          <Button variant="ghost" size="sm">
+            Mark all as read
+          </Button>
+        }
       >
         <div className="ss-controls" aria-label="Alert filters">
           <input
@@ -127,7 +131,12 @@ export function AlertsPage() {
             <div className="ss-controls__meta">
               <Badge tone="info">{(fetchState.data || []).length} results</Badge>
               {activeCount > 0 && (
-                <Button variant="secondary" size="sm" onClick={reset} aria-label="Clear filters">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={reset}
+                  aria-label="Clear filters"
+                >
                   Clear filters
                 </Button>
               )}
@@ -189,29 +198,32 @@ export function AlertsPage() {
           gap:${theme.spacing.xs}px;
           min-width: 180px;
         }
+
         .ss-field__label{
           font-size: 11px;
           font-weight: 900;
-          color: rgba(226,232,240,0.72);
+          color: ${theme.colors.mutedText};
           letter-spacing: 0.25px;
         }
 
         .ss-input, .ss-select{
           border-radius:${theme.radii.lg}px;
-          border:1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.10);
+          border:1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.88);
           padding: 11px 14px;
           font-size: 13px;
           outline:none;
           transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
-          color: #F8FAFC;
+          color: ${theme.colors.text};
           font-weight: 800;
         }
-        .ss-input::placeholder{ color: rgba(226,232,240,0.56); font-weight: 800; }
+
+        .ss-input::placeholder{ color: rgba(55,65,81,0.52); font-weight: 700; }
+
         .ss-input:focus, .ss-select:focus{
-          border-color: rgba(99,102,241,0.46);
-          box-shadow: 0 0 0 4px rgba(99,102,241,0.22);
-          background: rgba(255,255,255,0.14);
+          border-color: rgba(244,114,182,0.42);
+          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+          background: rgba(255,255,255,0.98);
         }
 
         .ss-controls__meta{
@@ -229,6 +241,7 @@ export function AlertsPage() {
         }
 
         .ss-alerts{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
+
         .ss-alert{
           display:flex;
           align-items:flex-start;
@@ -236,14 +249,33 @@ export function AlertsPage() {
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.lg}px;
           border-radius:${theme.radii.lg}px;
-          border:1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.10);
-          color: rgba(226,232,240,0.92);
+          border:1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.80);
+          color: ${theme.colors.text};
+          box-shadow: ${theme.colors.elevation1};
         }
-        .ss-alert__title{ font-size:13px; font-weight:900; color:#F8FAFC; }
-        .ss-alert__detail{ margin-top:${theme.spacing.sm}px; font-size:12.5px; color: rgba(226,232,240,0.70); font-weight:700; line-height:1.55; }
-        .ss-alert__meta{ margin-top:${theme.spacing.md}px; display:flex; align-items:center; gap:${theme.spacing.sm}px; flex-wrap:wrap; }
-        .ss-alert__id{ font-size: 11px; font-weight: 900; color: rgba(226,232,240,0.60); font-family:${theme.typography.monoFamily}; }
+
+        .ss-alert__title{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
+        .ss-alert__detail{
+          margin-top:${theme.spacing.sm}px;
+          font-size:12.5px;
+          color: ${theme.colors.mutedText};
+          font-weight:700;
+          line-height:1.55;
+        }
+        .ss-alert__meta{
+          margin-top:${theme.spacing.md}px;
+          display:flex;
+          align-items:center;
+          gap:${theme.spacing.sm}px;
+          flex-wrap:wrap;
+        }
+        .ss-alert__id{
+          font-size: 11px;
+          font-weight: 900;
+          color: rgba(55,65,81,0.55);
+          font-family:${theme.typography.monoFamily};
+        }
         .ss-alert__right{ display:flex; align-items:center; }
       `}</style>
     </div>

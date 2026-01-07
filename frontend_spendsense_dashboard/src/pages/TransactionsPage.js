@@ -66,13 +66,18 @@ export function TransactionsPage() {
 
   const activeFilters = useMemo(() => {
     const chips = [];
-    if (search.trim()) chips.push({ key: "search", label: `Search: “${search.trim()}”`, onRemove: () => setSearch("") });
-    if (status !== "All") chips.push({ key: "status", label: `Status: ${status}`, onRemove: () => setStatus("All") });
-    if (category !== "All") chips.push({ key: "category", label: `Category: ${category}`, onRemove: () => setCategory("All") });
+    if (search.trim())
+      chips.push({ key: "search", label: `Search: “${search.trim()}”`, onRemove: () => setSearch("") });
+    if (status !== "All")
+      chips.push({ key: "status", label: `Status: ${status}`, onRemove: () => setStatus("All") });
+    if (category !== "All")
+      chips.push({ key: "category", label: `Category: ${category}`, onRemove: () => setCategory("All") });
     if (dateFrom) chips.push({ key: "from", label: `From: ${dateFrom}`, onRemove: () => setDateFrom("") });
     if (dateTo) chips.push({ key: "to", label: `To: ${dateTo}`, onRemove: () => setDateTo("") });
-    if (amountMin !== "") chips.push({ key: "min", label: `Min: ${formatMoney(Number(amountMin))}`, onRemove: () => setAmountMin("") });
-    if (amountMax !== "") chips.push({ key: "max", label: `Max: ${formatMoney(Number(amountMax))}`, onRemove: () => setAmountMax("") });
+    if (amountMin !== "")
+      chips.push({ key: "min", label: `Min: ${formatMoney(Number(amountMin))}`, onRemove: () => setAmountMin("") });
+    if (amountMax !== "")
+      chips.push({ key: "max", label: `Max: ${formatMoney(Number(amountMax))}`, onRemove: () => setAmountMax("") });
     return chips;
   }, [amountMax, amountMin, category, dateFrom, dateTo, search, status]);
 
@@ -293,32 +298,36 @@ export function TransactionsPage() {
           min-width: 160px;
           flex: 1;
         }
+
         .ss-field__label{
           font-size: 11px;
           font-weight: 900;
-          color: rgba(226,232,240,0.72);
+          color: ${theme.colors.mutedText};
           letter-spacing: 0.25px;
         }
 
         .ss-input, .ss-select{
           border-radius:${theme.radii.lg}px;
-          border:1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.10);
+          border:1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.88);
           padding: 11px 14px;
           font-size: 13px;
           outline:none;
           transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
-          color: #F8FAFC;
+          color: ${theme.colors.text};
           font-weight: 800;
         }
-        .ss-input::placeholder{ color: rgba(226,232,240,0.56); font-weight: 800; }
+
+        .ss-input::placeholder{ color: rgba(55,65,81,0.52); font-weight: 700; }
         .ss-input{ width: 100%; }
         .ss-select{ font-weight:900; }
+
         .ss-input:focus, .ss-select:focus{
-          border-color: rgba(99,102,241,0.46);
-          box-shadow: 0 0 0 4px rgba(99,102,241,0.22);
-          background: rgba(255,255,255,0.14);
+          border-color: rgba(244,114,182,0.42);
+          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+          background: rgba(255,255,255,0.98);
         }
+
         .ss-input--dense, .ss-select--dense{
           padding: 10px 12px;
           font-size: 12.5px;
@@ -338,29 +347,33 @@ export function TransactionsPage() {
           flex-wrap:wrap;
           gap:${theme.spacing.sm}px;
         }
+
         .ss-chip{
           display:inline-flex;
           align-items:center;
           gap:8px;
           padding: 8px 10px;
           border-radius:${theme.radii.pill}px;
-          border: 1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.08);
-          color: rgba(226,232,240,0.92);
+          border: 1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.80);
+          color: ${theme.colors.text};
           font-size: 12px;
           font-weight: 900;
           cursor:pointer;
           transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
         }
+
         .ss-chip:hover{
-          background: rgba(255,255,255,0.12);
-          border-color: rgba(226,232,240,0.22);
+          background: rgba(244,114,182,0.10);
+          border-color: rgba(244,114,182,0.18);
           transform: translateY(-1px);
         }
+
         .ss-chip:focus-visible{
-          outline: 3px solid rgba(99,102,241,0.42);
+          outline: 3px solid rgba(244,114,182,0.45);
           outline-offset: 2px;
         }
+
         .ss-chip__x{
           width: 18px;
           height: 18px;
@@ -368,12 +381,13 @@ export function TransactionsPage() {
           align-items:center;
           justify-content:center;
           border-radius: ${theme.radii.pill}px;
-          background: rgba(226,232,240,0.10);
+          background: rgba(55,65,81,0.08);
         }
+
         .ss-chip--link{
           background: transparent;
           border-style: dashed;
-          color: rgba(226,232,240,0.82);
+          color: ${theme.colors.text};
         }
       `}</style>
     </div>

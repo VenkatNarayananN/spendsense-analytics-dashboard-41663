@@ -1,6 +1,32 @@
 import React from "react";
 import { theme } from "../../theme";
 
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function hexToRgb(hex) {
+  const h = String(hex || "").replace("#", "");
+  if (h.length !== 6) return null;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+/**
+ * Simple hover shade for solid colors (darken slightly).
+ * Keeps us within tokens without introducing a new palette.
+ */
+function shade(hex, amount = -10) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return hex;
+  const r = clamp(rgb.r + amount, 0, 255);
+  const g = clamp(rgb.g + amount, 0, 255);
+  const b = clamp(rgb.b + amount, 0, 255);
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 /**
  * PUBLIC_INTERFACE
  */
@@ -20,25 +46,34 @@ export function Button({
 
   const variants = {
     primary: {
-      bg: theme.gradients.accent,
+      bg: theme.colors.primary,
       color: "#FFFFFF",
       border: "transparent",
-      hoverBg: theme.gradients.accent,
-      shadow: theme.colors.shadowSm,
+      hoverBg: shade(theme.colors.primary, -12),
+      activeBg: shade(theme.colors.primary, -18),
+      shadow: theme.colors.elevation1,
+      focus: "rgba(244,114,182,0.45)",
+      focusSoft: "rgba(244,114,182,0.18)",
     },
     secondary: {
-      bg: "rgba(255,255,255,0.72)",
-      color: theme.colors.text,
-      border: "rgba(99,102,241,0.24)",
-      hoverBg: "rgba(255,255,255,0.86)",
-      shadow: "none",
+      bg: theme.colors.secondary,
+      color: "#111827",
+      border: "transparent",
+      hoverBg: shade(theme.colors.secondary, -14),
+      activeBg: shade(theme.colors.secondary, -20),
+      shadow: theme.colors.elevation1,
+      focus: "rgba(245,158,11,0.45)",
+      focusSoft: "rgba(245,158,11,0.18)",
     },
     ghost: {
       bg: "transparent",
-      color: "#E5E7EB",
-      border: "rgba(226,232,240,0.18)",
-      hoverBg: "rgba(226,232,240,0.08)",
+      color: theme.colors.text,
+      border: theme.colors.border,
+      hoverBg: "rgba(244,114,182,0.10)",
+      activeBg: "rgba(244,114,182,0.14)",
       shadow: "none",
+      focus: "rgba(244,114,182,0.45)",
+      focusSoft: "rgba(244,114,182,0.18)",
     },
   };
 
@@ -49,6 +84,7 @@ export function Button({
       <button className={`ss-btn ss-btn--${variant} ${className}`} {...props}>
         <span className="ss-btn__inner">{children}</span>
       </button>
+
       <style>{`
         .ss-btn{
           appearance:none;
@@ -61,41 +97,42 @@ export function Button({
           font-weight:800;
           letter-spacing: 0.2px;
           cursor:pointer;
-          transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease, opacity 140ms ease, border-color 140ms ease;
+          transition:
+            transform 140ms ease,
+            box-shadow 140ms ease,
+            background 140ms ease,
+            opacity 140ms ease,
+            border-color 140ms ease,
+            filter 140ms ease;
           box-shadow: ${v.shadow || "none"};
           position: relative;
-          overflow:hidden;
         }
-        .ss-btn__inner{ position: relative; z-index: 1; }
-        .ss-btn--primary:before{
-          content:"";
-          position:absolute;
-          inset:-1px;
-          background: radial-gradient(420px 180px at 20% 10%, rgba(255,255,255,0.26) 0%, rgba(255,255,255,0.00) 56%);
-          opacity: 0.95;
-          transition: opacity 140ms ease;
-        }
+
         .ss-btn:hover{
           background:${v.hoverBg};
           transform: translateY(-1px);
-          border-color: rgba(255,255,255,0.08);
+          border-color: ${variant === "ghost" ? "rgba(244,114,182,0.22)" : "transparent"};
         }
-        .ss-btn--secondary:hover{ border-color: rgba(99,102,241,0.32); }
-        .ss-btn--ghost:hover{ border-color: rgba(226,232,240,0.26); }
-        .ss-btn--primary:hover:before{ opacity: 1; }
+
         .ss-btn:active{
+          background:${v.activeBg || v.hoverBg};
           transform: translateY(0);
-          box-shadow: ${variant === "primary" ? "0 14px 34px rgba(2,6,23,0.22)" : "none"};
+          box-shadow: ${variant === "ghost" ? "none" : theme.colors.elevation2};
         }
+
         .ss-btn:disabled{
           opacity:0.55;
           cursor:not-allowed;
           transform:none;
           box-shadow:none;
         }
+
         .ss-btn:focus-visible{
-          outline: 3px solid rgba(99,102,241,0.42);
+          outline: 3px solid ${v.focus};
           outline-offset: 2px;
+          box-shadow:
+            0 0 0 4px ${v.focusSoft},
+            ${v.shadow || "none"};
         }
       `}</style>
     </>

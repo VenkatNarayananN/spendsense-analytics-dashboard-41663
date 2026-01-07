@@ -38,8 +38,8 @@ export function Sidebar({ isOpen, onClose }) {
 
         <div className="ss-sidebar__footer">
           <div className="ss-sidebar__meta">
-            <div className="ss-sidebar__metaTitle">Modern Fintech</div>
-            <div className="ss-sidebar__metaSub">Crisp • Accessible • Fast</div>
+            <div className="ss-sidebar__metaTitle">Ocean Professional</div>
+            <div className="ss-sidebar__metaSub">Elegant • Pastel • Accessible</div>
           </div>
         </div>
       </aside>
@@ -60,12 +60,11 @@ export function Sidebar({ isOpen, onClose }) {
           flex-direction:column;
           gap:${theme.spacing.xl}px;
 
-          background:
-            radial-gradient(520px 320px at 18% 6%, rgba(99,102,241,0.30) 0%, rgba(99,102,241,0.00) 62%),
-            radial-gradient(520px 320px at 84% 16%, rgba(6,182,212,0.22) 0%, rgba(6,182,212,0.00) 60%),
-            linear-gradient(180deg, rgba(15,23,42,0.92) 0%, rgba(2,6,23,0.90) 100%);
-          border-right: 1px solid rgba(226,232,240,0.12);
-          color: #E5E7EB;
+          background: ${theme.colors.surface};
+          border-right: 1px solid ${theme.colors.border};
+          color: ${theme.colors.text};
+
+          box-shadow: ${theme.colors.elevation1};
         }
 
         .ss-sidebar__brand{
@@ -74,10 +73,10 @@ export function Sidebar({ isOpen, onClose }) {
           gap:${theme.spacing.md}px;
           padding:${theme.spacing.md}px;
           border-radius:${theme.radii.lg}px;
-          background: rgba(255,255,255,0.06);
-          border: 1px solid rgba(226,232,240,0.14);
-          box-shadow: 0 16px 40px rgba(2,6,23,0.26);
+          background: ${theme.gradients.primarySoft};
+          border: 1px solid ${theme.colors.border};
         }
+
         .ss-sidebar__logo{
           width:44px;
           height:44px;
@@ -89,16 +88,18 @@ export function Sidebar({ isOpen, onClose }) {
           align-items:center;
           justify-content:center;
           letter-spacing:0.6px;
-          box-shadow: 0 16px 36px rgba(2,6,23,0.30);
+          box-shadow: ${theme.colors.elevation1};
         }
-        .ss-sidebar__name{ font-weight: 900; color:#F8FAFC; font-size:14px; }
-        .ss-sidebar__tag{ margin-top:2px; font-size:12px; color: rgba(226,232,240,0.72); font-weight:700; }
+
+        .ss-sidebar__name{ font-weight: 900; color:${theme.colors.text}; font-size:14px; }
+        .ss-sidebar__tag{ margin-top:2px; font-size:12px; color: ${theme.colors.mutedText}; font-weight:700; }
 
         .ss-sidebar__nav{
           display:flex;
           flex-direction:column;
           gap:${theme.spacing.sm}px;
         }
+
         .ss-sidebar__link{
           display:flex;
           align-items:center;
@@ -107,28 +108,29 @@ export function Sidebar({ isOpen, onClose }) {
           border-radius:${theme.radii.md}px;
           border: 1px solid transparent;
           text-decoration:none;
-          color: rgba(226,232,240,0.88);
+          color: ${theme.colors.text};
           font-weight:900;
           font-size:13px;
           letter-spacing:0.2px;
           transition: background 140ms ease, transform 140ms ease, border-color 140ms ease, color 140ms ease;
         }
+
         .ss-sidebar__dot{
           width:10px;
           height:10px;
           border-radius:${theme.radii.pill}px;
-          background: rgba(226,232,240,0.32);
+          background: rgba(55,65,81,0.24);
         }
+
         .ss-sidebar__link:hover{
-          background: rgba(226,232,240,0.08);
+          background: rgba(244,114,182,0.10);
           transform: translateY(-1px);
-          border-color: rgba(226,232,240,0.14);
-          color: #F8FAFC;
+          border-color: rgba(244,114,182,0.18);
         }
+
         .ss-sidebar__link.active{
-          background: rgba(99,102,241,0.20);
-          border-color: rgba(99,102,241,0.30);
-          color:#F8FAFC;
+          background: rgba(244,114,182,0.14);
+          border-color: rgba(244,114,182,0.24);
         }
         .ss-sidebar__link.active .ss-sidebar__dot{
           background:${theme.colors.secondary};
@@ -138,11 +140,11 @@ export function Sidebar({ isOpen, onClose }) {
           margin-top:auto;
           padding:${theme.spacing.md}px;
           border-radius:${theme.radii.lg}px;
-          border: 1px solid rgba(226,232,240,0.14);
-          background: rgba(255,255,255,0.06);
+          border: 1px solid ${theme.colors.border};
+          background: rgba(245,158,11,0.10);
         }
-        .ss-sidebar__metaTitle{ font-size:12px; font-weight:900; color:#F8FAFC; }
-        .ss-sidebar__metaSub{ margin-top:2px; font-size:11px; color: rgba(226,232,240,0.70); font-weight:700; }
+        .ss-sidebar__metaTitle{ font-size:12px; font-weight:900; color:${theme.colors.text}; }
+        .ss-sidebar__metaSub{ margin-top:2px; font-size:11px; color: ${theme.colors.mutedText}; font-weight:700; }
 
         /* Mobile/tablet drawer */
         .ss-sidebarBackdrop{ display:none; }
@@ -161,7 +163,7 @@ export function Sidebar({ isOpen, onClose }) {
             display:block;
             position: fixed;
             inset: 0;
-            background: rgba(2,6,23,0.64);
+            background: rgba(17,24,39,0.40);
             opacity: 0;
             pointer-events: none;
             z-index: 40;

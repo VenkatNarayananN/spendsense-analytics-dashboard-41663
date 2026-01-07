@@ -24,7 +24,10 @@ function transformInsights(insights, timeRange, category) {
   let cats = insights.topCategories.map((c) => ({
     ...c,
     value: Math.round(c.value * factor),
-    changePct: Math.round((c.changePct + (timeRange === "90d" ? 1.6 : timeRange === "7d" ? -0.8 : 0)) * 10) / 10,
+    changePct:
+      Math.round(
+        (c.changePct + (timeRange === "90d" ? 1.6 : timeRange === "7d" ? -0.8 : 0)) * 10
+      ) / 10,
   }));
 
   if (category !== "All") {
@@ -58,10 +61,10 @@ export function InsightsPage() {
     []
   );
 
-  const derived = useMemo(
-    () => transformInsights(baseInsights, timeRange, category),
-    [timeRange, category]
-  );
+  const derived = useMemo(() => transformInsights(baseInsights, timeRange, category), [
+    timeRange,
+    category,
+  ]);
 
   const fetchState = useMockFetch(
     () => derived,
@@ -74,7 +77,8 @@ export function InsightsPage() {
     setCategory("All");
   }, []);
 
-  const empty = !fetchState.loading && fetchState.data && fetchState.data.topCategories.length === 0;
+  const empty =
+    !fetchState.loading && fetchState.data && fetchState.data.topCategories.length === 0;
 
   return (
     <div className="ss-page">
@@ -202,22 +206,26 @@ export function InsightsPage() {
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.lg}px ${theme.spacing.xl}px;
-          border: 1px solid rgba(226,232,240,0.14);
+          border: 1px solid ${theme.colors.border};
           border-radius:${theme.radii.lg}px;
-          background: rgba(255,255,255,0.08);
+          background: rgba(255,255,255,0.72);
           backdrop-filter: blur(10px);
+          box-shadow: ${theme.colors.elevation1};
         }
+
         .ss-toolbar__title{
           font-size: 14px;
           font-weight: 900;
-          color:#F8FAFC;
+          color:${theme.colors.text};
         }
+
         .ss-toolbar__subtitle{
           margin-top: 2px;
           font-size: 12px;
           font-weight: 700;
-          color: rgba(226,232,240,0.70);
+          color: ${theme.colors.mutedText};
         }
+
         .ss-toolbar__right{
           display:flex;
           align-items:center;
@@ -228,16 +236,17 @@ export function InsightsPage() {
 
         .ss-seg{
           display:inline-flex;
-          border: 1px solid rgba(226,232,240,0.16);
+          border: 1px solid ${theme.colors.border};
           border-radius:${theme.radii.pill}px;
           overflow:hidden;
-          background: rgba(255,255,255,0.06);
+          background: rgba(244,114,182,0.08);
         }
+
         .ss-seg__btn{
           appearance:none;
           border:none;
           background: transparent;
-          color: rgba(226,232,240,0.78);
+          color: ${theme.colors.text};
           font-weight: 900;
           font-size: 12px;
           letter-spacing: 0.2px;
@@ -245,36 +254,39 @@ export function InsightsPage() {
           cursor:pointer;
           transition: background 120ms ease, color 120ms ease;
         }
-        .ss-seg__btn:hover{ background: rgba(255,255,255,0.06); color:#F8FAFC; }
+
+        .ss-seg__btn:hover{ background: rgba(244,114,182,0.10); }
+
         .ss-seg__btn.active{
-          background: rgba(99,102,241,0.26);
-          color:#F8FAFC;
+          background: rgba(244,114,182,0.16);
+          color:${theme.colors.text};
         }
+
         .ss-seg__btn:focus-visible{
-          outline: 3px solid rgba(99,102,241,0.42);
+          outline: 3px solid rgba(244,114,182,0.45);
           outline-offset: 2px;
         }
 
         .ss-select{
           border-radius:${theme.radii.lg}px;
-          border:1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.10);
+          border:1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.88);
           padding: 10px 12px;
           font-size: 13px;
           outline:none;
           transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
-          color: #F8FAFC;
+          color: ${theme.colors.text};
           font-weight: 900;
           min-width: 190px;
         }
+
         .ss-select:focus{
-          border-color: rgba(99,102,241,0.46);
-          box-shadow: 0 0 0 4px rgba(99,102,241,0.22);
-          background: rgba(255,255,255,0.14);
+          border-color: rgba(244,114,182,0.42);
+          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+          background: rgba(255,255,255,0.98);
         }
 
         .ss-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:${theme.spacing.xl}px; }
-
         .ss-section{ margin-bottom:${theme.spacing.lg}px; }
 
         .ss-cats{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
@@ -285,39 +297,53 @@ export function InsightsPage() {
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.md}px;
           border-radius:${theme.radii.lg}px;
-          border:1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.10);
+          border:1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.80);
+          box-shadow: ${theme.colors.elevation1};
         }
-        .ss-cat__label{ font-size:13px; font-weight:900; color:#F8FAFC; }
+
+        .ss-cat__label{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
+
         .ss-cat__bar{
           margin-top:${theme.spacing.sm}px;
           height: 10px;
           border-radius:${theme.radii.pill}px;
-          background: rgba(226,232,240,0.12);
+          background: rgba(55,65,81,0.10);
           overflow:hidden;
           width: min(520px, 52vw);
         }
+
         .ss-cat__fill{
           height:100%;
           border-radius:${theme.radii.pill}px;
           background: ${theme.gradients.accent};
         }
+
         .ss-cat__meta{
           margin-top:${theme.spacing.sm}px;
           font-size: 12px;
           font-weight: 800;
-          color: rgba(226,232,240,0.68);
+          color: ${theme.colors.mutedText};
         }
 
         .ss-trends{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
+
         .ss-trend{
           padding:${theme.spacing.lg}px;
           border-radius:${theme.radii.lg}px;
-          border:1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.08);
+          border:1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.72);
+          box-shadow: ${theme.colors.elevation1};
         }
-        .ss-trend__title{ font-size:13px; font-weight:900; color:#F8FAFC; }
-        .ss-trend__detail{ margin-top:${theme.spacing.sm}px; font-size:12.5px; color: rgba(226,232,240,0.70); font-weight:700; line-height:1.55; }
+
+        .ss-trend__title{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
+        .ss-trend__detail{
+          margin-top:${theme.spacing.sm}px;
+          font-size:12.5px;
+          color: ${theme.colors.mutedText};
+          font-weight:700;
+          line-height:1.55;
+        }
 
         @media (max-width: 1100px){
           .ss-grid{ grid-template-columns: 1fr; }
@@ -340,9 +366,9 @@ function ButtonLike({ label, onClick }) {
       <style>{`
         .ss-btnLike{
           appearance:none;
-          border: 1px solid rgba(226,232,240,0.16);
-          background: rgba(255,255,255,0.06);
-          color: rgba(226,232,240,0.86);
+          border: 1px solid ${theme.colors.border};
+          background: rgba(255,255,255,0.80);
+          color: ${theme.colors.text};
           font-weight: 900;
           font-size: 12px;
           padding: 10px 12px;
@@ -350,13 +376,15 @@ function ButtonLike({ label, onClick }) {
           cursor:pointer;
           transition: background 120ms ease, transform 120ms ease, border-color 120ms ease;
         }
+
         .ss-btnLike:hover{
-          background: rgba(255,255,255,0.10);
+          background: rgba(244,114,182,0.10);
           transform: translateY(-1px);
-          border-color: rgba(226,232,240,0.22);
+          border-color: rgba(244,114,182,0.18);
         }
+
         .ss-btnLike:focus-visible{
-          outline: 3px solid rgba(99,102,241,0.42);
+          outline: 3px solid rgba(244,114,182,0.45);
           outline-offset: 2px;
         }
       `}</style>
