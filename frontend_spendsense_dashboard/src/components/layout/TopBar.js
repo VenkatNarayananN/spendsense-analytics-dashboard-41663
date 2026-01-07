@@ -1,11 +1,14 @@
 import React from "react";
 import { theme } from "../../theme";
 import { Button } from "../ui/Button";
+import { useAuth } from "../../auth/AuthContext";
 
 /**
  * PUBLIC_INTERFACE
  */
 export function TopBar({ title, onOpenNav, rightSlot }) {
+  const { isAuthenticated, signOut } = useAuth();
+
   return (
     <header className="ss-topbar" aria-label="Top navigation">
       <div className="ss-topbar__left">
@@ -34,9 +37,20 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
 
       <div className="ss-topbar__right">
         {rightSlot}
-        <Button variant="ghost" size="sm" aria-label="Open profile">
-          Avery Chen
-        </Button>
+        {isAuthenticated ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={signOut}
+            aria-label="Sign out (placeholder)"
+          >
+            Sign out
+          </Button>
+        ) : (
+          <Button variant="ghost" size="sm" aria-label="Profile placeholder">
+            Avery Chen
+          </Button>
+        )}
       </div>
 
       <style>{`
@@ -113,7 +127,8 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           min-width: 200px;
         }
 
-        @media (max-width: 980px){
+        /* Responsive: show hamburger at/under ~1024px, hide center search */
+        @media (max-width: 1024px){
           .ss-topbar__menuBtn{ display:inline-flex; align-items:center; justify-content:center; }
           .ss-topbar__center{ display:none; }
         }

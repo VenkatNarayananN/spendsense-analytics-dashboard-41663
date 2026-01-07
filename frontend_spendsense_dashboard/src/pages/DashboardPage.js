@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
+import { AreaChartPlaceholder } from "../components/charts";
 import { dashboardSummary, transactions } from "../mockData";
 import { theme } from "../theme";
 
@@ -52,23 +53,19 @@ export function DashboardPage() {
 
       <div className="ss-grid ss-grid--two">
         <Card title="Spending Pulse" subtitle="Placeholder chart (weekly pattern)">
-          <div className="ss-spark" role="img" aria-label="Sparkline chart">
-            {Array.from({ length: 14 }).map((_, i) => (
-              <div
-                key={i}
-                className="ss-spark__bar"
-                style={{
-                  height: `${22 + ((i * 17) % 58)}%`,
-                  background:
-                    i % 3 === 0
-                      ? theme.colors.primary
-                      : i % 3 === 1
-                        ? theme.colors.secondary
-                        : "rgba(55,65,81,0.22)",
-                }}
-              />
-            ))}
-          </div>
+          <AreaChartPlaceholder
+            title="Spending Pulse (placeholder)"
+            height={220}
+            data={[
+              { label: "Mon", value: 34 },
+              { label: "Tue", value: 58 },
+              { label: "Wed", value: 42 },
+              { label: "Thu", value: 76 },
+              { label: "Fri", value: 62 },
+              { label: "Sat", value: 88 },
+              { label: "Sun", value: 54 },
+            ]}
+          />
           <div className="ss-footnote">Tip: connect real data later via Supabase or backend API.</div>
         </Card>
 
@@ -119,21 +116,6 @@ export function DashboardPage() {
           background: linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.secondary});
         }
 
-        .ss-spark{
-          height: 170px;
-          display:flex;
-          align-items:flex-end;
-          gap: 6px;
-          padding: 10px;
-          border-radius:${theme.radii.lg}px;
-          border: 1px dashed rgba(55,65,81,0.20);
-          background: rgba(253,242,248,0.55);
-        }
-        .ss-spark__bar{
-          flex:1;
-          border-radius:${theme.radii.pill}px;
-          opacity: 0.9;
-        }
         .ss-footnote{
           margin-top:${theme.spacing.md}px;
           font-size:12px;

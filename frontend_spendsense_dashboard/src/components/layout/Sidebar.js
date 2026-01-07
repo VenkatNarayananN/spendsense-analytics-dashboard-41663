@@ -136,9 +136,9 @@ export function Sidebar({ isOpen, onClose }) {
         .ss-sidebar__metaTitle{ font-size:12px; font-weight:900; color:${theme.colors.text}; }
         .ss-sidebar__metaSub{ margin-top:2px; font-size:11px; color:${theme.colors.mutedText}; font-weight:700; }
 
-        /* Mobile */
+        /* Mobile/tablet drawer */
         .ss-sidebarBackdrop{ display:none; }
-        @media (max-width: 980px){
+        @media (max-width: 1024px){
           .ss-sidebar{
             position: fixed;
             top: 0;

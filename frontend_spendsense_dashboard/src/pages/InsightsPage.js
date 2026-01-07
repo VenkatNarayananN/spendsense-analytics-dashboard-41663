@@ -1,6 +1,7 @@
 import React from "react";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
+import { BarChartPlaceholder, DonutChartPlaceholder } from "../components/charts";
 import { insights } from "../mockData";
 import { theme } from "../theme";
 
@@ -12,6 +13,14 @@ export function InsightsPage() {
     <div className="ss-page">
       <div className="ss-grid">
         <Card title="Category Performance" subtitle="Top categories (mock)">
+          <div className="ss-section">
+            <BarChartPlaceholder
+              title="Category Spend (placeholder)"
+              height={220}
+              data={insights.topCategories.map((c) => ({ label: c.label, value: c.value }))}
+            />
+          </div>
+
           <div className="ss-cats">
             {insights.topCategories.map((c) => (
               <div key={c.label} className="ss-cat">
@@ -35,6 +44,19 @@ export function InsightsPage() {
         </Card>
 
         <Card title="Trend Summaries" subtitle="Actionable patterns (mock)">
+          <div className="ss-section">
+            <DonutChartPlaceholder
+              title="Allocation (placeholder)"
+              height={220}
+              data={[
+                { label: "Groceries", value: 44 },
+                { label: "Dining", value: 26 },
+                { label: "Travel", value: 18 },
+                { label: "Other", value: 12 },
+              ]}
+            />
+          </div>
+
           <div className="ss-trends">
             {insights.trends.map((t) => (
               <div key={t.label} className="ss-trend">
@@ -49,6 +71,9 @@ export function InsightsPage() {
       <style>{`
         .ss-page{ display:flex; flex-direction:column; gap:${theme.spacing.xl}px; }
         .ss-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:${theme.spacing.xl}px; }
+
+        .ss-section{ margin-bottom:${theme.spacing.lg}px; }
+
         .ss-cats{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
         .ss-cat{
           display:flex;
@@ -74,6 +99,7 @@ export function InsightsPage() {
           border-radius:${theme.radii.pill}px;
           background: linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.secondary});
         }
+
         .ss-trends{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
         .ss-trend{
           padding:${theme.spacing.lg}px;
