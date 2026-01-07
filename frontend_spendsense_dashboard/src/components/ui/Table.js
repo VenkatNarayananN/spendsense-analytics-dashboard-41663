@@ -32,9 +32,10 @@ export function Table({ columns, rows, getRowKey }) {
         .ss-tableWrap{
           width:100%;
           overflow:auto;
-          border: 1px solid ${theme.colors.border};
+          border: 1px solid rgba(226,232,240,0.18);
           border-radius:${theme.radii.lg}px;
-          background:${theme.colors.surface};
+          background:${theme.colors.surfaceSolid};
+          box-shadow: ${theme.colors.shadowSm};
         }
         .ss-table{
           width:100%;
@@ -47,20 +48,23 @@ export function Table({ columns, rows, getRowKey }) {
           font-size:12px;
           color:${theme.colors.mutedText};
           padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          background: rgba(244,114,182,0.10);
+          background: rgba(99,102,241,0.10);
           position: sticky;
           top: 0;
           z-index: 1;
-          border-bottom: 1px solid ${theme.colors.border};
+          border-bottom: 1px solid rgba(226,232,240,0.20);
+          font-weight: 900;
         }
         tbody td{
           padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          border-bottom: 1px solid ${theme.colors.border};
+          border-bottom: 1px solid rgba(15,23,42,0.10);
           color:${theme.colors.text};
           font-size:13px;
+          font-weight: 700;
+          background: ${theme.colors.surfaceSolid};
         }
         tbody tr:hover td{
-          background: rgba(245,158,11,0.06);
+          background: rgba(6,182,212,0.06);
         }
         tbody tr:last-child td{
           border-bottom:none;

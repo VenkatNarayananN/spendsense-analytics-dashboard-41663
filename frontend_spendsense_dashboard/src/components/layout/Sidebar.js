@@ -15,7 +15,7 @@ export function Sidebar({ isOpen, onClose }) {
           </div>
           <div className="ss-sidebar__brandText">
             <div className="ss-sidebar__name">SpendSense</div>
-            <div className="ss-sidebar__tag">Analytics</div>
+            <div className="ss-sidebar__tag">Fintech Analytics</div>
           </div>
         </div>
 
@@ -38,8 +38,8 @@ export function Sidebar({ isOpen, onClose }) {
 
         <div className="ss-sidebar__footer">
           <div className="ss-sidebar__meta">
-            <div className="ss-sidebar__metaTitle">Ocean Professional</div>
-            <div className="ss-sidebar__metaSub">Elegant • Pastels • Calm</div>
+            <div className="ss-sidebar__metaTitle">Modern Fintech</div>
+            <div className="ss-sidebar__metaSub">Crisp • Accessible • Fast</div>
           </div>
         </div>
       </aside>
@@ -54,13 +54,18 @@ export function Sidebar({ isOpen, onClose }) {
 
       <style>{`
         .ss-sidebar{
-          width: 272px;
-          background: ${theme.colors.surface};
-          border-right: 1px solid ${theme.colors.border};
+          width: 288px;
           padding: ${theme.spacing.xl}px ${theme.spacing.lg}px;
           display:flex;
           flex-direction:column;
           gap:${theme.spacing.xl}px;
+
+          background:
+            radial-gradient(520px 320px at 18% 6%, rgba(99,102,241,0.30) 0%, rgba(99,102,241,0.00) 62%),
+            radial-gradient(520px 320px at 84% 16%, rgba(6,182,212,0.22) 0%, rgba(6,182,212,0.00) 60%),
+            linear-gradient(180deg, rgba(15,23,42,0.92) 0%, rgba(2,6,23,0.90) 100%);
+          border-right: 1px solid rgba(226,232,240,0.12);
+          color: #E5E7EB;
         }
 
         .ss-sidebar__brand{
@@ -69,24 +74,25 @@ export function Sidebar({ isOpen, onClose }) {
           gap:${theme.spacing.md}px;
           padding:${theme.spacing.md}px;
           border-radius:${theme.radii.lg}px;
-          background: ${theme.gradients.primarySoft};
-          border: 1px solid rgba(244,114,182,0.20);
+          background: rgba(255,255,255,0.06);
+          border: 1px solid rgba(226,232,240,0.14);
+          box-shadow: 0 16px 40px rgba(2,6,23,0.26);
         }
         .ss-sidebar__logo{
           width:44px;
           height:44px;
           border-radius:${theme.radii.md}px;
-          background: ${theme.colors.primary};
-          color:#111827;
+          background: ${theme.gradients.accent};
+          color:#FFFFFF;
           font-weight:900;
           display:flex;
           align-items:center;
           justify-content:center;
           letter-spacing:0.6px;
-          box-shadow: 0 8px 20px rgba(244,114,182,0.25);
+          box-shadow: 0 16px 36px rgba(2,6,23,0.30);
         }
-        .ss-sidebar__name{ font-weight: 900; color:${theme.colors.text}; font-size:14px; }
-        .ss-sidebar__tag{ margin-top:2px; font-size:12px; color:${theme.colors.mutedText}; font-weight:600; }
+        .ss-sidebar__name{ font-weight: 900; color:#F8FAFC; font-size:14px; }
+        .ss-sidebar__tag{ margin-top:2px; font-size:12px; color: rgba(226,232,240,0.72); font-weight:700; }
 
         .ss-sidebar__nav{
           display:flex;
@@ -101,26 +107,28 @@ export function Sidebar({ isOpen, onClose }) {
           border-radius:${theme.radii.md}px;
           border: 1px solid transparent;
           text-decoration:none;
-          color:${theme.colors.text};
-          font-weight:800;
+          color: rgba(226,232,240,0.88);
+          font-weight:900;
           font-size:13px;
           letter-spacing:0.2px;
-          transition: background 140ms ease, transform 140ms ease, border-color 140ms ease;
+          transition: background 140ms ease, transform 140ms ease, border-color 140ms ease, color 140ms ease;
         }
         .ss-sidebar__dot{
           width:10px;
           height:10px;
           border-radius:${theme.radii.pill}px;
-          background: rgba(55,65,81,0.25);
+          background: rgba(226,232,240,0.32);
         }
         .ss-sidebar__link:hover{
-          background: rgba(244,114,182,0.08);
+          background: rgba(226,232,240,0.08);
           transform: translateY(-1px);
-          border-color: rgba(244,114,182,0.25);
+          border-color: rgba(226,232,240,0.14);
+          color: #F8FAFC;
         }
         .ss-sidebar__link.active{
-          background: rgba(245,158,11,0.10);
-          border-color: rgba(245,158,11,0.30);
+          background: rgba(99,102,241,0.20);
+          border-color: rgba(99,102,241,0.30);
+          color:#F8FAFC;
         }
         .ss-sidebar__link.active .ss-sidebar__dot{
           background:${theme.colors.secondary};
@@ -130,11 +138,11 @@ export function Sidebar({ isOpen, onClose }) {
           margin-top:auto;
           padding:${theme.spacing.md}px;
           border-radius:${theme.radii.lg}px;
-          border: 1px solid ${theme.colors.border};
-          background: rgba(253,242,248,0.65);
+          border: 1px solid rgba(226,232,240,0.14);
+          background: rgba(255,255,255,0.06);
         }
-        .ss-sidebar__metaTitle{ font-size:12px; font-weight:900; color:${theme.colors.text}; }
-        .ss-sidebar__metaSub{ margin-top:2px; font-size:11px; color:${theme.colors.mutedText}; font-weight:700; }
+        .ss-sidebar__metaTitle{ font-size:12px; font-weight:900; color:#F8FAFC; }
+        .ss-sidebar__metaSub{ margin-top:2px; font-size:11px; color: rgba(226,232,240,0.70); font-weight:700; }
 
         /* Mobile/tablet drawer */
         .ss-sidebarBackdrop{ display:none; }
@@ -147,14 +155,13 @@ export function Sidebar({ isOpen, onClose }) {
             z-index: 50;
             transform: translateX(-110%);
             transition: transform 180ms ease;
-            box-shadow: 18px 0 40px rgba(17,24,39,0.18);
           }
           .ss-sidebar.open{ transform: translateX(0); }
           .ss-sidebarBackdrop{
             display:block;
             position: fixed;
             inset: 0;
-            background: rgba(17,24,39,0.36);
+            background: rgba(2,6,23,0.64);
             opacity: 0;
             pointer-events: none;
             z-index: 40;

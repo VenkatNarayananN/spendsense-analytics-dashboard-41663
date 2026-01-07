@@ -23,7 +23,7 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
 
         <div className="ss-topbar__titleWrap">
           <h1 className="ss-topbar__title">{title}</h1>
-          <div className="ss-topbar__subtitle">SpendSense • Elegant Analytics</div>
+          <div className="ss-topbar__subtitle">SpendSense • Modern Fintech</div>
         </div>
       </div>
 
@@ -60,9 +60,9 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.lg}px ${theme.spacing.xl}px;
-          border-bottom: 1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.72);
-          backdrop-filter: blur(10px);
+          border-bottom: 1px solid rgba(226,232,240,0.14);
+          background: rgba(255,255,255,0.08);
+          backdrop-filter: blur(12px);
           position: sticky;
           top: 0;
           z-index: 10;
@@ -78,26 +78,27 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           width:42px;
           height:42px;
           border-radius:${theme.radii.md}px;
-          border:1px solid ${theme.colors.border};
-          background:${theme.colors.surface};
+          border:1px solid rgba(226,232,240,0.16);
+          background: rgba(255,255,255,0.10);
           cursor:pointer;
           font-weight:900;
+          color:#E5E7EB;
         }
         .ss-topbar__menuBtn:focus-visible{
-          outline: 3px solid rgba(244, 114, 182, 0.35);
+          outline: 3px solid rgba(99, 102, 241, 0.42);
           outline-offset: 2px;
         }
         .ss-topbar__title{
           margin:0;
           font-size:16px;
-          color:${theme.colors.text};
+          color:#F8FAFC;
           font-weight: 900;
           letter-spacing: 0.3px;
         }
         .ss-topbar__subtitle{
           margin-top:2px;
           font-size:12px;
-          color:${theme.colors.mutedText};
+          color: rgba(226,232,240,0.70);
           font-weight:700;
         }
         .ss-topbar__center{
@@ -108,16 +109,19 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
         .ss-topbar__search{
           width:min(560px, 100%);
           border-radius:${theme.radii.lg}px;
-          border:1px solid ${theme.colors.border};
-          background:${theme.colors.surface};
+          border:1px solid rgba(226,232,240,0.14);
+          background: rgba(255,255,255,0.10);
           padding: 11px 14px;
           font-size: 13px;
           outline:none;
-          transition: box-shadow 140ms ease, border-color 140ms ease;
+          transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+          color: #F8FAFC;
         }
+        .ss-topbar__search::placeholder{ color: rgba(226,232,240,0.60); font-weight:700; }
         .ss-topbar__search:focus{
-          border-color: rgba(244,114,182,0.45);
-          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+          border-color: rgba(99,102,241,0.46);
+          box-shadow: 0 0 0 4px rgba(99,102,241,0.22);
+          background: rgba(255,255,255,0.14);
         }
         .ss-topbar__right{
           display:flex;
@@ -127,7 +131,6 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           min-width: 200px;
         }
 
-        /* Responsive: show hamburger at/under ~1024px, hide center search */
         @media (max-width: 1024px){
           .ss-topbar__menuBtn{ display:inline-flex; align-items:center; justify-content:center; }
           .ss-topbar__center{ display:none; }

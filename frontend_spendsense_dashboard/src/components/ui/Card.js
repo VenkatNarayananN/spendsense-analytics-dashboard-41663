@@ -24,10 +24,11 @@ export function Card({ title, subtitle, action, children, className = "" }) {
       <style>{`
         .ss-card {
           background: ${theme.colors.surface};
-          border: 1px solid ${theme.colors.border};
+          border: 1px solid rgba(226,232,240,0.18);
           border-radius: ${theme.radii.lg}px;
           box-shadow: ${theme.colors.shadow};
           overflow: hidden;
+          backdrop-filter: blur(10px);
         }
         .ss-card__header{
           display:flex;
@@ -35,7 +36,7 @@ export function Card({ title, subtitle, action, children, className = "" }) {
           justify-content:space-between;
           gap:${theme.spacing.md}px;
           padding:${theme.spacing.lg}px ${theme.spacing.xl}px;
-          border-bottom: 1px solid ${theme.colors.border};
+          border-bottom: 1px solid rgba(226,232,240,0.18);
           background: ${theme.gradients.primarySoft};
         }
         .ss-card__titles{ min-width: 0; }
@@ -44,13 +45,14 @@ export function Card({ title, subtitle, action, children, className = "" }) {
           font-size: 14px;
           letter-spacing: 0.2px;
           color: ${theme.colors.text};
-          font-weight: 700;
+          font-weight: 900;
         }
         .ss-card__subtitle{
           margin:${theme.spacing.xs}px 0 0 0;
           font-size: 12px;
           color: ${theme.colors.mutedText};
           line-height: 1.45;
+          font-weight: 700;
         }
         .ss-card__body{
           padding:${theme.spacing.xl}px;

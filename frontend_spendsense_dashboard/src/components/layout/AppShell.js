@@ -51,7 +51,6 @@ export function AppShell({ children }) {
           gap:${theme.spacing.xl}px;
         }
 
-        /* Mobile/tablet: sidebar is overlay (Sidebar handles) */
         @media (max-width: 1024px){
           .ss-app{ display:block; }
         }

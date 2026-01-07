@@ -47,7 +47,7 @@ export function DashboardPage() {
         <Card title="Active Cards" subtitle="Payment methods tracked" action={<Badge tone="success">Healthy</Badge>}>
           <div className="ss-statValue">{dashboardSummary.activeCards}</div>
           <div className="ss-statHint">All cards syncing normally</div>
-          <Button variant="ghost" size="sm">Manage</Button>
+          <Button variant="secondary" size="sm">Manage</Button>
         </Card>
       </div>
 
@@ -107,13 +107,13 @@ export function DashboardPage() {
           margin-top:${theme.spacing.md}px;
           height: 10px;
           border-radius:${theme.radii.pill}px;
-          background: rgba(55,65,81,0.10);
+          background: rgba(15,23,42,0.10);
           overflow:hidden;
         }
         .ss-progress__bar{
           height:100%;
           border-radius:${theme.radii.pill}px;
-          background: linear-gradient(90deg, ${theme.colors.primary}, ${theme.colors.secondary});
+          background: ${theme.gradients.accent};
         }
 
         .ss-footnote{
@@ -131,8 +131,8 @@ export function DashboardPage() {
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.md}px;
           border-radius:${theme.radii.lg}px;
-          border: 1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.70);
+          border: 1px solid rgba(15,23,42,0.10);
+          background: rgba(255,255,255,0.72);
         }
         .ss-listItem__title{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
         .ss-listItem__sub{ margin-top:2px; font-size:12px; color:${theme.colors.mutedText}; font-weight:700; }
