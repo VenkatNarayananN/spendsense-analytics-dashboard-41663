@@ -22,24 +22,28 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
         </button>
 
         <div className="ss-topbar__titleWrap">
+          <div className="ss-topbar__crumb">Dashboard</div>
           <h1 className="ss-topbar__title">{title}</h1>
-          <div className="ss-topbar__subtitle">SpendSense • Ocean Professional</div>
         </div>
       </div>
 
       <div className="ss-topbar__center" role="search">
         <input
           className="ss-topbar__search"
-          placeholder="Search merchants, categories, alerts…"
+          placeholder="Search…"
           aria-label="Search"
         />
       </div>
 
       <div className="ss-topbar__right">
         {rightSlot}
+        <Button variant="danger" size="pill" aria-label="Alerts (mock)">
+          3 Alerts
+        </Button>
+
         {isAuthenticated ? (
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={signOut}
             aria-label="Sign out (placeholder)"
@@ -47,7 +51,7 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
             Sign out
           </Button>
         ) : (
-          <Button variant="ghost" size="sm" aria-label="Profile placeholder">
+          <Button variant="secondary" size="sm" aria-label="Profile placeholder">
             Avery Chen
           </Button>
         )}
@@ -55,14 +59,15 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
 
       <style>{`
         .ss-topbar{
+          height: 64px;
           display:flex;
           align-items:center;
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
-          padding:${theme.spacing.lg}px ${theme.spacing.xl}px;
+          padding: 0 ${theme.spacing.xl}px;
+
+          background: ${theme.colors.sidebar};
           border-bottom: 1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.70);
-          backdrop-filter: blur(10px);
           position: sticky;
           top: 0;
           z-index: 10;
@@ -72,45 +77,45 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           display:flex;
           align-items:center;
           gap:${theme.spacing.md}px;
-          min-width: 240px;
+          min-width: 220px;
         }
 
         .ss-topbar__menuBtn{
           display:none;
-          width:42px;
-          height:42px;
+          width:36px;
+          height:36px;
           border-radius:${theme.radii.md}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(244,114,182,0.10);
+          background:${theme.colors.card};
           cursor:pointer;
-          font-weight:900;
-          color:${theme.colors.text};
+          font-weight:${theme.typography.weights.bold};
+          color:${theme.colors.textStrong};
           transition: background 140ms ease, transform 140ms ease;
         }
 
         .ss-topbar__menuBtn:hover{
-          background: rgba(244,114,182,0.14);
+          background:${theme.colors.mutedSurface};
           transform: translateY(-1px);
         }
 
         .ss-topbar__menuBtn:focus-visible{
-          outline: 3px solid rgba(244,114,182,0.45);
+          outline: 3px solid rgba(249,115,22,0.25);
           outline-offset: 2px;
         }
 
-        .ss-topbar__title{
-          margin:0;
-          font-size:16px;
-          color:${theme.colors.text};
-          font-weight: 900;
-          letter-spacing: 0.3px;
+        .ss-topbar__crumb{
+          font-size:${theme.typography.sizes.xs}px;
+          color:${theme.colors.textMuted};
+          font-weight:${theme.typography.weights.medium};
+          line-height:${theme.typography.lineHeights.tight};
         }
 
-        .ss-topbar__subtitle{
-          margin-top:2px;
-          font-size:12px;
-          color: ${theme.colors.mutedText};
-          font-weight:700;
+        .ss-topbar__title{
+          margin:2px 0 0 0;
+          font-size:${theme.typography.sizes.lg}px;
+          color:${theme.colors.textStrong};
+          font-weight:${theme.typography.weights.semibold};
+          line-height:${theme.typography.lineHeights.tight};
         }
 
         .ss-topbar__center{
@@ -120,27 +125,24 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
         }
 
         .ss-topbar__search{
-          width:min(560px, 100%);
-          border-radius:${theme.radii.lg}px;
+          width:min(520px, 100%);
+          height: 32px;
+          border-radius:${theme.radii.md}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.85);
-          padding: 11px 14px;
-          font-size: 13px;
+          background:${theme.colors.card};
+          padding: 0 12px;
+          font-size:${theme.typography.sizes.sm}px;
           outline:none;
-          transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
-          color: ${theme.colors.text};
-          font-weight: 700;
+          color:${theme.colors.text};
         }
 
         .ss-topbar__search::placeholder{
-          color: rgba(55,65,81,0.55);
-          font-weight:700;
+          color:${theme.colors.textDisabled};
         }
 
         .ss-topbar__search:focus{
-          border-color: rgba(244,114,182,0.42);
-          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
-          background: rgba(255,255,255,0.98);
+          border-color: rgba(249,115,22,0.35);
+          box-shadow: 0 0 0 4px rgba(249,115,22,0.14);
         }
 
         .ss-topbar__right{
@@ -148,7 +150,7 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           align-items:center;
           justify-content:flex-end;
           gap:${theme.spacing.sm}px;
-          min-width: 200px;
+          min-width: 260px;
         }
 
         @media (max-width: 1024px){

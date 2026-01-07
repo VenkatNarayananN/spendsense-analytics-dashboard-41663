@@ -23,10 +23,10 @@ export function Card({ title, subtitle, action, children, className = "" }) {
 
       <style>{`
         .ss-card {
-          background: ${theme.colors.surface};
+          background: ${theme.colors.card};
           border: 1px solid ${theme.colors.border};
           border-radius: ${theme.radii.lg}px;
-          box-shadow: ${theme.colors.elevation2};
+          box-shadow: ${theme.shadows.sm};
           overflow: hidden;
         }
 
@@ -35,31 +35,31 @@ export function Card({ title, subtitle, action, children, className = "" }) {
           align-items:flex-start;
           justify-content:space-between;
           gap:${theme.spacing.md}px;
-          padding:${theme.spacing.lg}px ${theme.spacing.xl}px;
-          border-bottom: 1px solid ${theme.colors.border};
-          background: ${theme.gradients.primarySoft};
+          padding:${theme.spacing.lg}px;
+          border-bottom: 1px solid ${theme.colors.borderSubtle};
+          background: ${theme.colors.card};
         }
 
         .ss-card__titles{ min-width: 0; }
 
         .ss-card__title{
           margin:0;
-          font-size: 14px;
-          letter-spacing: 0.2px;
-          color: ${theme.colors.text};
-          font-weight: 900;
+          font-size: ${theme.typography.sizes.lg}px;
+          color: ${theme.colors.textStrong};
+          font-weight: ${theme.typography.weights.semibold};
+          line-height:${theme.typography.lineHeights.tight};
         }
 
         .ss-card__subtitle{
-          margin:${theme.spacing.xs}px 0 0 0;
-          font-size: 12px;
-          color: ${theme.colors.mutedText};
-          line-height: 1.45;
-          font-weight: 700;
+          margin: 6px 0 0 0;
+          font-size: ${theme.typography.sizes.sm}px;
+          color: ${theme.colors.textMuted};
+          line-height: ${theme.typography.lineHeights.normal};
+          font-weight: ${theme.typography.weights.medium};
         }
 
         .ss-card__body{
-          padding:${theme.spacing.xl}px;
+          padding:${theme.spacing.lg}px;
         }
       `}</style>
     </section>

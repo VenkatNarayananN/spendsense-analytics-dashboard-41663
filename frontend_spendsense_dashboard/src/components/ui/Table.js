@@ -34,8 +34,8 @@ export function Table({ columns, rows, getRowKey }) {
           overflow:auto;
           border: 1px solid ${theme.colors.border};
           border-radius:${theme.radii.lg}px;
-          background:${theme.colors.surfaceSolid};
-          box-shadow: ${theme.colors.elevation1};
+          background:${theme.colors.card};
+          box-shadow: ${theme.shadows.sm};
         }
 
         .ss-table{
@@ -47,28 +47,28 @@ export function Table({ columns, rows, getRowKey }) {
 
         thead th{
           text-align:left;
-          font-size:12px;
-          color:${theme.colors.mutedText};
+          font-size:${theme.typography.sizes.xs}px;
+          color:${theme.colors.textMuted};
           padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          background: ${theme.gradients.primarySoft};
+          background: ${theme.colors.card};
           position: sticky;
           top: 0;
           z-index: 1;
-          border-bottom: 1px solid ${theme.colors.border};
-          font-weight: 900;
+          border-bottom: 1px solid ${theme.colors.borderSubtle};
+          font-weight: ${theme.typography.weights.semibold};
         }
 
         tbody td{
           padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          border-bottom: 1px solid ${theme.colors.border};
+          border-bottom: 1px solid ${theme.colors.borderSubtle};
           color:${theme.colors.text};
-          font-size:13px;
-          font-weight: 700;
-          background: ${theme.colors.surfaceSolid};
+          font-size:${theme.typography.sizes.sm}px;
+          font-weight: ${theme.typography.weights.medium};
+          background: ${theme.colors.card};
         }
 
         tbody tr:hover td{
-          background: rgba(244,114,182,0.06);
+          background: rgba(17,24,39,0.03);
         }
 
         tbody tr:last-child td{

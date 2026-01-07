@@ -1,112 +1,94 @@
-/* SpendSense - Modern Fintech (Ocean Professional tuned)
-   - Crisp card surfaces, soft gradient headers, refined typography
-   - Subtle neumorphic shadows, hover/active states, strong focus rings
-   - Consistent spacing scale + form controls
-   - Reusable empty/loading states
+/* SpendSense - Screenshot Theme
+   Source of truth:
+   - assets/style_guide.md
+   - assets/component_specs.md
 */
 
-/* ---- Theme Tokens ---- */
-:root {
-  /* Accents (keep) */
-  --primary: #F472B6;
-  --secondary: #F59E0B;
-  --success: #10B981;
-  --error: #EF4444;
+/* ---- Extracted Tokens (CSS variables) ---- */
+:root{
+  /* Canvas / surfaces */
+  --bg-canvas: #F7E6EF;
+  --bg-sidebar: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-muted: #F6F7F9;
 
-  /* Fintech neutrals */
-  --bg: #FDF2F8;               /* base from existing palette */
-  --surface: rgba(255, 255, 255, 0.78);
-  --surface-strong: #FFFFFF;
-  --text: #111827;
-  --muted: rgba(17, 24, 39, 0.62);
-  --border: rgba(17, 24, 39, 0.12);
+  /* Text */
+  --text-strong: #111827;
+  --text-default: #374151;
+  --text-muted: #6B7280;
+  --text-disabled: #9CA3AF;
 
-  /* Gradients */
-  --gradient-start: #FFF1F2; /* rose-50 */
-  --gradient-end: #FAE8FF;   /* purple-50 */
-  --header-glow:
-    radial-gradient(1000px 450px at 10% 10%, rgba(244, 114, 182, 0.18), transparent 58%),
-    radial-gradient(900px 420px at 90% 20%, rgba(245, 158, 11, 0.12), transparent 58%);
+  /* Borders / dividers */
+  --border-default: #E5E7EB;
+  --border-subtle: #EEF2F7;
 
-  /* Shadows (subtle neumorphism) */
-  --shadow-sm: 0 1px 2px rgba(17, 24, 39, 0.06), 0 8px 24px rgba(17, 24, 39, 0.06);
-  --shadow-md: 0 12px 34px rgba(17, 24, 39, 0.12);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.60);
+  /* Brand / accent */
+  --accent-orange: #F97316;
+  --accent-orange-hover: #EA580C;
+  --accent-orange-soft: #FFEDD5;
+  --accent-red: #EF4444;
+  --accent-red-soft: #FEE2E2;
+
+  /* Status */
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+
+  /* Effects */
+  --shadow-sm: 0 1px 2px rgba(16,24,40,0.08);
+  --shadow-md: 0 6px 18px rgba(16,24,40,0.10);
+
+  /* Typography */
+  --font-family: "Helvetica Neue", Arial, sans-serif;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --line-tight: 1.2;
+  --line-normal: 1.4;
+  --line-relaxed: 1.6;
+
+  /* Spacing */
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
 
   /* Radius */
-  --radius-sm: 12px;
-  --radius-md: 16px;
-  --radius-lg: 20px;
-
-  /* Focus */
-  --focus: 0 0 0 3px rgba(244, 114, 182, 0.35), 0 0 0 1px rgba(17, 24, 39, 0.10);
-
-  /* Spacing scale */
-  --space-1: 6px;
-  --space-2: 10px;
-  --space-3: 14px;
-  --space-4: 18px;
-  --space-5: 24px;
-
-  --sidebar-w: 268px;
-  --alerts-w: 328px;
-}
-
-/* Dark theme kept working */
-[data-theme="dark"] {
-  --bg: #0A1020;
-  --surface: rgba(15, 23, 42, 0.72);
-  --surface-strong: #0F172A;
-  --text: #E5E7EB;
-  --muted: rgba(229, 231, 235, 0.62);
-  --border: rgba(229, 231, 235, 0.14);
-
-  --gradient-start: #0A1020;
-  --gradient-end: #151A33;
-  --header-glow:
-    radial-gradient(1000px 450px at 10% 10%, rgba(244, 114, 182, 0.14), transparent 58%),
-    radial-gradient(900px 420px at 90% 20%, rgba(245, 158, 11, 0.10), transparent 58%);
-
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.34), 0 10px 30px rgba(0, 0, 0, 0.38);
-  --shadow-md: 0 16px 44px rgba(0, 0, 0, 0.42);
-  --shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 999px;
 }
 
 /* ---- Base ---- */
-* { box-sizing: border-box; }
+*{ box-sizing: border-box; }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+html, body, #root{ height: 100%; }
 
-body {
-  margin: 0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--ss-text);
-
-  /* Gentle Ocean Professional background */
-  background:
-    radial-gradient(920px 520px at 14% 12%, rgba(244,114,182,0.22) 0%, rgba(244,114,182,0.00) 62%),
-    radial-gradient(880px 520px at 84% 16%, rgba(245,158,11,0.16) 0%, rgba(245,158,11,0.00) 58%),
-    linear-gradient(135deg, #FDF2F8 0%, #FAF5FF 100%);
-}
-
-* {
-  box-sizing: border-box;
-}
-
-a {
-  color: inherit;
-}
-
-.App {
-  min-height: 100vh;
+body{
+  margin:0;
+  font-family: var(--font-family);
+  color: var(--text-default);
+  background: var(--bg-canvas);
 }
 
 /* Accessible focus outlines globally */
-:focus-visible {
-  outline: 3px solid var(--ss-focus);
+:focus-visible{
+  outline: 3px solid rgba(249,115,22,0.30);
   outline-offset: 2px;
 }
+
+a{ color: inherit; }
+.App{ min-height:100vh; }

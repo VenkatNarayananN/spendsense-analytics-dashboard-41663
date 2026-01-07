@@ -1,99 +1,80 @@
 /**
- * SpendSense theme tokens (Ocean Professional).
- * Centralized design system primitives for consistent styling.
+ * SpendSense theme tokens (Screenshot Extract).
+ * Source of truth:
+ * - assets/style_guide.md
+ * - assets/component_specs.md
  *
- * Style guide:
- * - primary:   #F472B6
- * - secondary: #F59E0B
- * - success:   #10B981
- * - error:     #EF4444
- * - text:      #374151
- * - background:#FDF2F8
- * - surface:   #FFFFFF
- * - gradient:  rose-50 -> purple-50 (soft, elegant)
+ * This file intentionally centralizes primitives so components can reference
+ * semantic roles (theme.colors.*) instead of hard-coded hex values.
  */
 
 export const theme = {
-  tokens: {
-    primary: "#F472B6",
-    secondary: "#F59E0B",
-    success: "#10B981",
-    error: "#EF4444",
-    text: "#374151",
-    background: "#FDF2F8",
-    surface: "#FFFFFF",
-  },
-
-  /**
-   * Semantic color roles. Keep this as the single source-of-truth for components.
-   * (Components should pull from these rather than inventing ad-hoc colors.)
-   */
   colors: {
-    // Core roles
-    primary: "#F472B6",
-    secondary: "#F59E0B",
-    success: "#10B981",
-    error: "#EF4444",
-    warning: "#F59E0B",
-    info: "#F472B6",
+    // Canvas / surfaces
+    canvas: "#F7E6EF", // --bg-canvas
+    sidebar: "#FFFFFF", // --bg-sidebar
+    card: "#FFFFFF", // --bg-card
+    mutedSurface: "#F6F7F9", // --bg-muted
 
-    // Neutrals / text roles
+    // Text
+    textStrong: "#111827",
     text: "#374151",
-    textPrimary: "#374151",
-    mutedText: "rgba(55,65,81,0.68)",
+    textMuted: "#6B7280",
+    textDisabled: "#9CA3AF",
 
-    // Surfaces / borders
-    background: "#FDF2F8",
-    surface: "#FFFFFF",
-    surfaceSolid: "#FFFFFF",
-    border: "rgba(55,65,81,0.14)",
+    // Borders / dividers
+    border: "#E5E7EB",
+    borderSubtle: "#EEF2F7",
 
-    /**
-     * Surface elevations.
-     * Use subtle, elegant elevation on light surfaces (no harsh shadows).
-     */
-    elevation1: "0 10px 24px rgba(17,24,39,0.08)",
-    elevation2: "0 18px 44px rgba(17,24,39,0.12)",
+    // Brand / accent
+    orange: "#F97316",
+    orangeHover: "#EA580C",
+    orangeSoft: "#FFEDD5",
+    red: "#EF4444",
+    redSoft: "#FEE2E2",
+
+    // Status
+    success: "#22C55E",
+    warning: "#F59E0B",
+    danger: "#EF4444",
+
+    // Back-compat aliases (older components use these names)
+    primary: "#F97316",
+    secondary: "#FFEDD5",
+    info: "#F97316",
+    error: "#EF4444",
   },
 
-  gradients: {
-    /**
-     * Page background: gentle, pastel gradient (rose-50 -> purple-50),
-     * layered with soft radial accents using primary/secondary.
-     */
-    page:
-      "radial-gradient(920px 520px at 14% 12%, rgba(244,114,182,0.22) 0%, rgba(244,114,182,0.00) 62%), radial-gradient(880px 520px at 84% 16%, rgba(245,158,11,0.16) 0%, rgba(245,158,11,0.00) 58%), linear-gradient(135deg, #FDF2F8 0%, #FAF5FF 100%)",
-
-    // Soft highlight backgrounds for headers/sections
-    primarySoft:
-      "linear-gradient(135deg, rgba(244,114,182,0.14) 0%, rgba(217,70,239,0.10) 100%)",
-
-    // Primary/secondary accent gradient (used sparingly for primary CTAs)
-    accent:
-      "linear-gradient(90deg, rgba(244,114,182,1) 0%, rgba(245,158,11,1) 100%)",
+  typography: {
+    fontFamily: '"Helvetica Neue", Arial, sans-serif',
+    monoFamily:
+      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+    sizes: { xs: 12, sm: 13, md: 14, lg: 16, xl: 18 },
+    weights: { regular: 400, medium: 500, semibold: 600, bold: 700 },
+    lineHeights: { tight: 1.2, normal: 1.4, relaxed: 1.6 },
   },
 
-  radii: {
-    sm: 10,
-    md: 14,
-    lg: 18,
-    pill: 999,
-  },
+  radii: { sm: 8, md: 10, lg: 12, xl: 16, pill: 999 },
 
   spacing: {
-    xs: 6,
-    sm: 10,
-    md: 14,
-    lg: 18,
+    // Keep existing keys used throughout pages, but align values to spec scale.
+    xs: 8,
+    sm: 12,
+    md: 16,
+    lg: 20,
     xl: 24,
     "2xl": 32,
   },
 
-  typography: {
-    fontFamily:
-      "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif",
-    monoFamily:
-      "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+  shadows: {
+    sm: "0 1px 2px rgba(16,24,40,0.08)",
+    md: "0 6px 18px rgba(16,24,40,0.10)",
+  },
+
+  layout: {
+    sidebarWidth: 240,
+    rightRailWidth: 300,
+    rightRailWidthNarrow: 260,
   },
 };
 

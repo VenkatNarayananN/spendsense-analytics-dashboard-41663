@@ -7,29 +7,29 @@ import { theme } from "../../theme";
 export function Badge({ tone = "neutral", children, className = "" }) {
   const tones = {
     neutral: {
-      bg: "rgba(55,65,81,0.06)",
+      bg: theme.colors.mutedSurface,
       fg: theme.colors.text,
-      border: theme.colors.border,
+      border: theme.colors.borderSubtle,
     },
     info: {
-      bg: "rgba(244,114,182,0.14)",
-      fg: theme.colors.text,
-      border: "rgba(244,114,182,0.30)",
+      bg: theme.colors.orangeSoft,
+      fg: theme.colors.orange,
+      border: "rgba(249,115,22,0.18)",
     },
     warning: {
-      bg: "rgba(245,158,11,0.16)",
-      fg: theme.colors.text,
-      border: "rgba(245,158,11,0.32)",
+      bg: "rgba(245,158,11,0.18)",
+      fg: theme.colors.textStrong,
+      border: "rgba(245,158,11,0.28)",
     },
     success: {
-      bg: "rgba(16,185,129,0.14)",
-      fg: theme.colors.text,
-      border: "rgba(16,185,129,0.28)",
+      bg: "rgba(34,197,94,0.16)",
+      fg: theme.colors.textStrong,
+      border: "rgba(34,197,94,0.24)",
     },
     error: {
-      bg: "rgba(239,68,68,0.14)",
-      fg: theme.colors.text,
-      border: "rgba(239,68,68,0.30)",
+      bg: theme.colors.redSoft,
+      fg: theme.colors.red,
+      border: "rgba(239,68,68,0.22)",
     },
   };
 
@@ -44,15 +44,15 @@ export function Badge({ tone = "neutral", children, className = "" }) {
         .ss-badge{
           display:inline-flex;
           align-items:center;
-          gap:6px;
-          padding:6px 10px;
+          height:24px;
+          padding: 0 8px;
           border-radius:${theme.radii.pill}px;
           border:1px solid ${t.border};
           background:${t.bg};
           color:${t.fg};
-          font-size:12px;
-          font-weight:800;
-          letter-spacing:0.2px;
+          font-size:${theme.typography.sizes.xs}px;
+          font-weight:${theme.typography.weights.medium};
+          line-height:${theme.typography.lineHeights.tight};
           white-space:nowrap;
         }
       `}</style>
