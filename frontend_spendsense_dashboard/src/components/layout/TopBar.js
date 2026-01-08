@@ -1,12 +1,56 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../theme/ThemeProvider";
 import { Button } from "../ui/Button";
+import { useAuth } from "../../auth/AuthContext";
 
 /**
  * PUBLIC_INTERFACE
  */
 export function TopBar({ title, onOpenNav, rightSlot }) {
   const { mode, themeName, setThemeMode, toggleTheme } = useTheme();
+  const { isAuthenticated, user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const [signOutState, setSignOutState] = useState({ status: "idle", message: "" });
+
+  const displayName = useMemo(() => {
+    const email = user?.email;
+    const fullName =
+      user?.user_metadata?.full_name ||
+      user?.user_metadata?.name ||
+      user?.user_metadata?.fullName ||
+      null;
+
+    return fullName || email || "Account";
+  }, [user]);
+
+  async function handleSignOut() {
+    if (signOutState.status === "working") return;
+    setSignOutState({ status: "working", message: "Signing out…" });
+
+    try {
+      await signOut();
+      setSignOutState({ status: "success", message: "Signed out." });
+
+      // Small delay so the user perceives feedback; then navigate to login.
+      window.setTimeout(() => {
+        navigate("/login", { replace: true });
+      }, 350);
+    } catch (err) {
+      setSignOutState({
+        status: "error",
+        message: err?.message || "Sign out failed. Please try again.",
+      });
+
+      // Clear error message after a short period to avoid a persistent alert.
+      window.setTimeout(() => {
+        setSignOutState({ status: "idle", message: "" });
+      }, 2200);
+    }
+  }
+
+  const showSignOut = isAuthenticated;
 
   return (
     <header className="ss-topbar" aria-label="Top navigation">
@@ -58,12 +102,40 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           </select>
         </div>
 
+        {/* Minimal sign-out UI: icon button + brief feedback */}
+        {showSignOut && (
+          <div className="ss-topbar__account" aria-label="Account actions">
+            <div className="ss-topbar__accountName" title={displayName}>
+              {displayName}
+            </div>
+
+            <button
+              type="button"
+              className="ss-topbar__iconBtn"
+              onClick={handleSignOut}
+              disabled={signOutState.status === "working"}
+              aria-label="Sign out"
+              title={signOutState.status === "working" ? "Signing out…" : "Sign out"}
+            >
+              <span className="ss-topbar__iconBtnGlyph" aria-hidden="true">
+                ⎋
+              </span>
+            </button>
+
+            {signOutState.message ? (
+              <span
+                className="ss-topbar__signoutStatus"
+                aria-live="polite"
+                data-tone={signOutState.status}
+              >
+                {signOutState.message}
+              </span>
+            ) : null}
+          </div>
+        )}
+
         <Button variant="danger" size="pill" aria-label="Alerts (mock)">
           3 Alerts
-        </Button>
-
-        <Button variant="secondary" size="sm" aria-label="Profile placeholder">
-          Avery Chen
         </Button>
       </div>
 
@@ -242,6 +314,91 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
         .ss-topbar__themeSelect:focus-visible{
           outline: 3px solid var(--focus-ring);
           outline-offset: 2px;
+        }
+
+        .ss-topbar__account{
+          display:flex;
+          align-items:center;
+          gap:8px;
+          padding: 6px 8px;
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border-subtle);
+          background: color-mix(in srgb, var(--bg-card) 74%, transparent);
+          transition: var(--theme-transitions);
+          max-width: 320px;
+        }
+
+        .ss-topbar__accountName{
+          max-width: 160px;
+          overflow:hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          font-size: var(--text-xs);
+          font-weight: var(--weight-black);
+          letter-spacing: 0.15px;
+          color: var(--text-strong);
+        }
+
+        .ss-topbar__iconBtn{
+          width: 34px;
+          height: 34px;
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+          color: var(--text-strong);
+          cursor: pointer;
+          transition: var(--theme-transitions), transform 140ms ease;
+          display:inline-flex;
+          align-items:center;
+          justify-content:center;
+        }
+
+        .ss-topbar__iconBtn:hover{
+          transform: translateY(-1px);
+          border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+          background: color-mix(in srgb, var(--danger) 12%, var(--bg-card));
+        }
+
+        .ss-topbar__iconBtn:disabled{
+          cursor:not-allowed;
+          opacity: 0.68;
+          transform:none;
+        }
+
+        .ss-topbar__iconBtnGlyph{
+          font-size: 14px;
+          line-height: 1;
+          font-weight: var(--weight-black);
+        }
+
+        .ss-topbar__signoutStatus{
+          font-size: 11px;
+          font-weight: var(--weight-black);
+          padding: 6px 10px;
+          border-radius: var(--radius-pill);
+          border: 1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+          color: var(--text-muted);
+          transition: var(--theme-transitions);
+          white-space: nowrap;
+        }
+
+        .ss-topbar__signoutStatus[data-tone="working"]{
+          border-color: color-mix(in srgb, var(--brand-primary) 26%, transparent);
+          background: var(--grad-accent-soft);
+          color: var(--text-strong);
+        }
+
+        .ss-topbar__signoutStatus[data-tone="success"]{
+          border-color: color-mix(in srgb, var(--success) 30%, transparent);
+          background: color-mix(in srgb, var(--success) 14%, var(--bg-card));
+          color: var(--text-strong);
+        }
+
+        .ss-topbar__signoutStatus[data-tone="error"]{
+          border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+          background: color-mix(in srgb, var(--danger) 12%, var(--bg-card));
+          color: var(--text-strong);
         }
 
         @media (max-width: 1024px){
