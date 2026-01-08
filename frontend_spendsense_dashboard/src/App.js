@@ -8,6 +8,7 @@ import { InsightsPage } from "./pages/InsightsPage";
 import { AlertsPage } from "./pages/AlertsPage";
 import { SettingsPage } from "./pages/SettingsPage";
 import { LoginPage } from "./pages/LoginPage";
+import { SignUpPage } from "./pages/SignUpPage";
 import { AuthProvider } from "./auth/AuthContext";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { ThemeProvider } from "./theme/ThemeProvider";
@@ -21,6 +22,7 @@ function App() {
           <AppShell>
             <Routes>
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
 
               <Route
                 path="/"

@@ -86,6 +86,45 @@ export function AuthProvider({ children }) {
   }, []);
 
   // PUBLIC_INTERFACE
+  const signUpWithEmail = useCallback(async ({ email, password, fullName, emailRedirectTo } = {}) => {
+    /**
+     * Creates a new Supabase Auth user using email/password.
+     *
+     * Notes:
+     * - If Supabase "Confirm email" is enabled, user may need to verify via email before a session is available.
+     * - `emailRedirectTo` should be the app origin (or configured site URL) to complete the confirmation flow.
+     */
+    const supabase = await getSupabaseClient();
+    if (!supabase) {
+      throw new Error(
+        "Supabase is not configured. Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_KEY."
+      );
+    }
+
+    const trimmedEmail = String(email || "").trim();
+    if (!trimmedEmail) throw new Error("Email is required.");
+    if (!password) throw new Error("Password is required.");
+
+    const redirectTo =
+      emailRedirectTo ||
+      (typeof window !== "undefined" && window.location ? window.location.origin : undefined);
+
+    const { data, error } = await supabase.auth.signUp({
+      email: trimmedEmail,
+      password,
+      options: {
+        data: {
+          full_name: fullName ? String(fullName).trim() : undefined,
+        },
+        emailRedirectTo: redirectTo,
+      },
+    });
+
+    if (error) throw error;
+    return data;
+  }, []);
+
+  // PUBLIC_INTERFACE
   const signOut = useCallback(async () => {
     /**
      * Signs out the current user.
@@ -118,10 +157,11 @@ export function AuthProvider({ children }) {
       isAuthenticated: !!session,
       supabaseConfigured,
       signIn,
+      signUpWithEmail,
       signOut,
       generateSampleData,
     }),
-    [generateSampleData, loading, session, signIn, signOut, supabaseConfigured]
+    [generateSampleData, loading, session, signIn, signOut, signUpWithEmail, supabaseConfigured]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

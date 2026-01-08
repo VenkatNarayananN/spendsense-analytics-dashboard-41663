@@ -9,46 +9,78 @@ import { useAuth } from "../auth/AuthContext";
 /**
  * PUBLIC_INTERFACE
  */
-export function LoginPage() {
-  const { signIn, loading: authLoading, supabaseConfigured, isAuthenticated } = useAuth();
+export function SignUpPage() {
+  const { signUpWithEmail, loading: authLoading, supabaseConfigured, isAuthenticated } = useAuth();
 
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [status, setStatus] = useState({ type: "idle", message: "" });
 
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from || "/";
 
-  const signupBanner = useMemo(() => {
-    if (!location.state?.signupSuccess) return null;
-    return (
-      <div className="ss-status" aria-live="polite">
-        <Badge tone="success">{location.state?.signupMessage || "Account created. You can sign in now."}</Badge>
-      </div>
-    );
-  }, [location.state]);
+  const validationError = useMemo(() => {
+    if (!email.trim()) return "Email is required.";
+    if (!password) return "Password is required.";
+    if (password.length < 6) return "Password must be at least 6 characters.";
+    if (confirmPassword !== password) return "Passwords do not match.";
+    return null;
+  }, [confirmPassword, email, password]);
 
   const canSubmit = useMemo(() => {
     if (!supabaseConfigured) return false;
     if (authLoading) return false;
-    if (!email.trim() || !password) return false;
+    if (status.type === "working") return false;
+    if (validationError) return false;
     return true;
-  }, [authLoading, email, password, supabaseConfigured]);
+  }, [authLoading, status.type, supabaseConfigured, validationError]);
 
-  async function handleSignIn(e) {
+  async function handleSignUp(e) {
     e?.preventDefault?.();
     setStatus({ type: "working", message: "" });
 
+    if (validationError) {
+      setStatus({ type: "error", message: validationError });
+      return;
+    }
+
     try {
-      await signIn(email.trim(), password);
-      setStatus({ type: "success", message: "Signed in." });
-      navigate(from, { replace: true });
+      const data = await signUpWithEmail({
+        email: email.trim(),
+        password,
+        fullName: fullName.trim() || undefined,
+        // Requirement: use origin (Supabase will use this for the confirmation callback)
+        emailRedirectTo: typeof window !== "undefined" ? window.location.origin : undefined,
+      });
+
+      // If email confirmation is enabled, Supabase may not provide a session immediately.
+      // data.user exists either way; session may be null.
+      const hasSession = !!data?.session;
+      const message = hasSession
+        ? "Account created. You can sign in now."
+        : "Account created. Check your email to verify your address, then sign in.";
+
+      setStatus({ type: "success", message });
+
+      // Navigate to login with a banner once the user sees success.
+      window.setTimeout(() => {
+        navigate("/login", {
+          replace: true,
+          state: {
+            from,
+            signupSuccess: true,
+            signupMessage: message,
+          },
+        });
+      }, 900);
     } catch (err) {
       setStatus({
         type: "error",
-        message: err?.message || "Unable to sign in. Check your credentials and try again.",
+        message: err?.message || "Unable to create account. Please try again.",
       });
     }
   }
@@ -63,23 +95,45 @@ export function LoginPage() {
     <div className="ss-login">
       <div className="ss-login__wrap">
         <Card
-          title="Sign in"
-          subtitle="Authenticate with Supabase to access your dashboard."
-          action={<Badge tone={supabaseConfigured ? "success" : "warning"}>{supabaseConfigured ? "Supabase" : "Setup required"}</Badge>}
+          title="Create account"
+          subtitle="Create your SpendSense account using Supabase Auth."
+          action={
+            <Badge tone={supabaseConfigured ? "success" : "warning"}>
+              {supabaseConfigured ? "Supabase" : "Setup required"}
+            </Badge>
+          }
         >
           {!supabaseConfigured ? (
             <div className="ss-login__body">
               <p className="ss-login__hint">
-                Supabase is not configured for this environment.
-                Please set <code>REACT_APP_SUPABASE_URL</code> and <code>REACT_APP_SUPABASE_KEY</code> in the frontend container .env.
+                Supabase is not configured for this environment. Please set{" "}
+                <code>REACT_APP_SUPABASE_URL</code> and <code>REACT_APP_SUPABASE_KEY</code> in the
+                frontend container .env.
               </p>
               <div className="ss-login__note">
-                After configuring env vars, reload the page and sign in with your Supabase Auth user.
+                After configuring env vars, reload the page and create an account.
+              </div>
+              <div className="ss-authSwitch">
+                <span className="ss-authSwitch__text">Already have an account?</span>{" "}
+                <Link className="ss-authSwitch__link" to="/login">
+                  Sign in
+                </Link>
               </div>
             </div>
           ) : (
-            <form className="ss-login__body" onSubmit={handleSignIn}>
-              {signupBanner}
+            <form className="ss-login__body" onSubmit={handleSignUp}>
+              <label className="ss-label">
+                Full name <span className="ss-label__opt">(optional)</span>
+                <input
+                  className="ss-input"
+                  type="text"
+                  autoComplete="name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Alex Morgan"
+                  aria-label="Full name"
+                />
+              </label>
 
               <label className="ss-label">
                 Email
@@ -99,13 +153,32 @@ export function LoginPage() {
                 <input
                   className="ss-input"
                   type="password"
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   aria-label="Password"
                 />
               </label>
+
+              <label className="ss-label">
+                Confirm password
+                <input
+                  className="ss-input"
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="••••••••"
+                  aria-label="Confirm password"
+                />
+              </label>
+
+              {validationError && status.type !== "error" && (
+                <div className="ss-status" aria-live="polite">
+                  <Badge tone="warning">{validationError}</Badge>
+                </div>
+              )}
 
               {status.type === "error" && (
                 <div className="ss-status" role="alert">
@@ -120,28 +193,28 @@ export function LoginPage() {
               )}
 
               <div className="ss-login__actions">
-                <Button variant="primary" type="submit" disabled={!canSubmit} aria-label="Sign in">
-                  {status.type === "working" || authLoading ? "Signing in…" : "Sign in"}
+                <Button variant="primary" type="submit" disabled={!canSubmit} aria-label="Create account">
+                  {status.type === "working" || authLoading ? "Creating…" : "Create account"}
                 </Button>
 
-                <Link className="ss-linkBtn" to="/signup" state={{ from }}>
-                  Create an account
+                <Link className="ss-linkBtn" to="/login" state={{ from }}>
+                  Sign in instead
                 </Link>
               </div>
 
               <div className="ss-login__note">
-                <strong>Note:</strong> This app requires an authenticated Supabase session. Demo/mock sign-in has been removed.
-              </div>
-
-              <div className="ss-authSwitch">
-                <span className="ss-authSwitch__text">New here?</span>{" "}
-                <Link className="ss-authSwitch__link" to="/signup" state={{ from }}>
-                  Create your account
-                </Link>
+                <strong>Tip:</strong> If email confirmation is enabled in Supabase, you must verify your email before signing in.
               </div>
             </form>
           )}
         </Card>
+
+        <div className="ss-authSwitch">
+          <span className="ss-authSwitch__text">Already have an account?</span>{" "}
+          <Link className="ss-authSwitch__link" to="/login" state={{ from }}>
+            Sign in
+          </Link>
+        </div>
       </div>
 
       <style>{`
@@ -178,6 +251,10 @@ export function LoginPage() {
           font-weight:${theme.typography.weights.black};
           color:${theme.colors.textStrong};
         }
+        .ss-label__opt{
+          font-weight:${theme.typography.weights.bold};
+          color:${theme.colors.mutedText};
+        }
         .ss-input{
           border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
@@ -210,6 +287,13 @@ export function LoginPage() {
           border:1px dashed rgba(55,65,81,0.20);
           border-radius:${theme.radii.lg}px;
           background: rgba(255,255,255,0.55);
+        }
+        code{
+          font-family:${theme.typography.monoFamily};
+          font-size: 12px;
+          background: rgba(17,24,39,0.06);
+          padding: 2px 6px;
+          border-radius: 8px;
         }
         .ss-authSwitch{
           display:flex;
@@ -248,13 +332,6 @@ export function LoginPage() {
         .ss-linkBtn:hover{
           border-color: ${theme.colors.border};
           box-shadow: var(--shadow-sm);
-        }
-        code{
-          font-family:${theme.typography.monoFamily};
-          font-size: 12px;
-          background: rgba(17,24,39,0.06);
-          padding: 2px 6px;
-          border-radius: 8px;
         }
       `}</style>
     </div>
