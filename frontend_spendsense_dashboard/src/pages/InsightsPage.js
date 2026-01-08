@@ -7,6 +7,7 @@ import { BarChartPlaceholder, DonutChartPlaceholder } from "../components/charts
 import { insights as baseInsights } from "../mockData";
 import { theme } from "../theme";
 import { useMockFetch } from "../hooks/useMockFetch";
+import { Button } from "../components/ui/Button";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -66,11 +67,9 @@ export function InsightsPage() {
     category,
   ]);
 
-  const fetchState = useMockFetch(
-    () => derived,
-    [timeRange, category, derived.topCategories.length],
-    { delayMs: 520 }
-  );
+  const fetchState = useMockFetch(() => derived, [timeRange, category, derived.topCategories.length], {
+    delayMs: 520,
+  });
 
   const reset = useCallback(() => {
     setTimeRange("30d");
@@ -113,7 +112,9 @@ export function InsightsPage() {
             ))}
           </select>
 
-          <ButtonLike onClick={reset} label="Reset" />
+          <Button variant="secondary" size="sm" onClick={reset} aria-label="Reset insights filters">
+            Reset
+          </Button>
         </div>
       </div>
 
@@ -207,23 +208,23 @@ export function InsightsPage() {
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.lg}px ${theme.spacing.xl}px;
           border: 1px solid ${theme.colors.border};
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           background: rgba(255,255,255,0.72);
           backdrop-filter: blur(10px);
-          box-shadow: ${theme.colors.elevation1};
+          box-shadow: ${theme.shadows.sm};
         }
 
         .ss-toolbar__title{
           font-size: 14px;
-          font-weight: 900;
-          color:${theme.colors.text};
+          font-weight: ${theme.typography.weights.black};
+          color:${theme.colors.textStrong};
         }
 
         .ss-toolbar__subtitle{
           margin-top: 2px;
           font-size: 12px;
-          font-weight: 700;
-          color: ${theme.colors.mutedText};
+          font-weight: ${theme.typography.weights.semibold};
+          color: ${theme.colors.textMuted};
         }
 
         .ss-toolbar__right{
@@ -239,15 +240,15 @@ export function InsightsPage() {
           border: 1px solid ${theme.colors.border};
           border-radius:${theme.radii.pill}px;
           overflow:hidden;
-          background: rgba(244,114,182,0.08);
+          background: ${theme.gradients.accentSoft};
         }
 
         .ss-seg__btn{
           appearance:none;
           border:none;
           background: transparent;
-          color: ${theme.colors.text};
-          font-weight: 900;
+          color: ${theme.colors.textStrong};
+          font-weight: ${theme.typography.weights.black};
           font-size: 12px;
           letter-spacing: 0.2px;
           padding: 10px 12px;
@@ -255,29 +256,30 @@ export function InsightsPage() {
           transition: background 120ms ease, color 120ms ease;
         }
 
-        .ss-seg__btn:hover{ background: rgba(244,114,182,0.10); }
+        .ss-seg__btn:hover{ background: rgba(244,114,182,0.12); }
 
         .ss-seg__btn.active{
-          background: rgba(244,114,182,0.16);
-          color:${theme.colors.text};
+          background: rgba(255,255,255,0.72);
+          color:${theme.colors.textStrong};
         }
 
         .ss-seg__btn:focus-visible{
-          outline: 3px solid rgba(244,114,182,0.45);
+          outline: 3px solid ${theme.effects.focusRing};
           outline-offset: 2px;
         }
 
         .ss-select{
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.88);
+          background: rgba(255,255,255,0.86);
           padding: 10px 12px;
           font-size: 13px;
           outline:none;
           transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
-          color: ${theme.colors.text};
-          font-weight: 900;
+          color: ${theme.colors.textStrong};
+          font-weight: ${theme.typography.weights.black};
           min-width: 190px;
+          backdrop-filter: blur(10px);
         }
 
         .ss-select:focus{
@@ -296,13 +298,14 @@ export function InsightsPage() {
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.md}px;
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.80);
-          box-shadow: ${theme.colors.elevation1};
+          background: rgba(255,255,255,0.78);
+          box-shadow: ${theme.shadows.sm};
+          backdrop-filter: blur(10px);
         }
 
-        .ss-cat__label{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
+        .ss-cat__label{ font-size:13px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
 
         .ss-cat__bar{
           margin-top:${theme.spacing.sm}px;
@@ -322,26 +325,27 @@ export function InsightsPage() {
         .ss-cat__meta{
           margin-top:${theme.spacing.sm}px;
           font-size: 12px;
-          font-weight: 800;
-          color: ${theme.colors.mutedText};
+          font-weight: ${theme.typography.weights.bold};
+          color: ${theme.colors.textMuted};
         }
 
         .ss-trends{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
 
         .ss-trend{
           padding:${theme.spacing.lg}px;
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
           background: rgba(255,255,255,0.72);
-          box-shadow: ${theme.colors.elevation1};
+          box-shadow: ${theme.shadows.sm};
+          backdrop-filter: blur(10px);
         }
 
-        .ss-trend__title{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
+        .ss-trend__title{ font-size:13px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
         .ss-trend__detail{
           margin-top:${theme.spacing.sm}px;
           font-size:12.5px;
-          color: ${theme.colors.mutedText};
-          font-weight:700;
+          color: ${theme.colors.textMuted};
+          font-weight:${theme.typography.weights.semibold};
           line-height:1.55;
         }
 
@@ -351,43 +355,5 @@ export function InsightsPage() {
         }
       `}</style>
     </div>
-  );
-}
-
-/**
- * Small internal “link-like” button to avoid importing Button (keeps layout tidy).
- */
-function ButtonLike({ label, onClick }) {
-  return (
-    <>
-      <button className="ss-btnLike" type="button" onClick={onClick}>
-        {label}
-      </button>
-      <style>{`
-        .ss-btnLike{
-          appearance:none;
-          border: 1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.80);
-          color: ${theme.colors.text};
-          font-weight: 900;
-          font-size: 12px;
-          padding: 10px 12px;
-          border-radius:${theme.radii.lg}px;
-          cursor:pointer;
-          transition: background 120ms ease, transform 120ms ease, border-color 120ms ease;
-        }
-
-        .ss-btnLike:hover{
-          background: rgba(244,114,182,0.10);
-          transform: translateY(-1px);
-          border-color: rgba(244,114,182,0.18);
-        }
-
-        .ss-btnLike:focus-visible{
-          outline: 3px solid rgba(244,114,182,0.45);
-          outline-offset: 2px;
-        }
-      `}</style>
-    </>
   );
 }

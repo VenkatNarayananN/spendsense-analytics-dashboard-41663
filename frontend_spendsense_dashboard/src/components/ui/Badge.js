@@ -7,14 +7,14 @@ import { theme } from "../../theme";
 export function Badge({ tone = "neutral", children, className = "" }) {
   const tones = {
     neutral: {
-      bg: theme.colors.mutedSurface,
+      bg: "rgba(255,255,255,0.70)",
       fg: theme.colors.text,
       border: theme.colors.borderSubtle,
     },
     info: {
-      bg: theme.colors.orangeSoft,
-      fg: theme.colors.orange,
-      border: "rgba(249,115,22,0.18)",
+      bg: theme.gradients.accentSoft,
+      fg: theme.colors.textStrong,
+      border: "rgba(244,114,182,0.22)",
     },
     warning: {
       bg: "rgba(245,158,11,0.18)",
@@ -22,13 +22,13 @@ export function Badge({ tone = "neutral", children, className = "" }) {
       border: "rgba(245,158,11,0.28)",
     },
     success: {
-      bg: "rgba(34,197,94,0.16)",
+      bg: "rgba(16,185,129,0.16)",
       fg: theme.colors.textStrong,
-      border: "rgba(34,197,94,0.24)",
+      border: "rgba(16,185,129,0.24)",
     },
     error: {
-      bg: theme.colors.redSoft,
-      fg: theme.colors.red,
+      bg: "rgba(239,68,68,0.14)",
+      fg: theme.colors.textStrong,
       border: "rgba(239,68,68,0.22)",
     },
   };
@@ -45,13 +45,13 @@ export function Badge({ tone = "neutral", children, className = "" }) {
           display:inline-flex;
           align-items:center;
           height:24px;
-          padding: 0 8px;
+          padding: 0 10px;
           border-radius:${theme.radii.pill}px;
           border:1px solid ${t.border};
           background:${t.bg};
           color:${t.fg};
           font-size:${theme.typography.sizes.xs}px;
-          font-weight:${theme.typography.weights.medium};
+          font-weight:${theme.typography.weights.black};
           line-height:${theme.typography.lineHeights.tight};
           white-space:nowrap;
         }

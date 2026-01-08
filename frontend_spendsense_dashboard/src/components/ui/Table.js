@@ -33,8 +33,9 @@ export function Table({ columns, rows, getRowKey }) {
           width:100%;
           overflow:auto;
           border: 1px solid ${theme.colors.border};
-          border-radius:${theme.radii.lg}px;
-          background:${theme.colors.card};
+          border-radius:${theme.radii.xl}px;
+          background: rgba(255,255,255,0.86);
+          backdrop-filter: blur(10px);
           box-shadow: ${theme.shadows.sm};
         }
 
@@ -50,12 +51,13 @@ export function Table({ columns, rows, getRowKey }) {
           font-size:${theme.typography.sizes.xs}px;
           color:${theme.colors.textMuted};
           padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          background: ${theme.colors.card};
+          background: ${theme.gradients.header};
           position: sticky;
           top: 0;
           z-index: 1;
           border-bottom: 1px solid ${theme.colors.borderSubtle};
-          font-weight: ${theme.typography.weights.semibold};
+          font-weight: ${theme.typography.weights.black};
+          letter-spacing: 0.25px;
         }
 
         tbody td{
@@ -63,12 +65,12 @@ export function Table({ columns, rows, getRowKey }) {
           border-bottom: 1px solid ${theme.colors.borderSubtle};
           color:${theme.colors.text};
           font-size:${theme.typography.sizes.sm}px;
-          font-weight: ${theme.typography.weights.medium};
-          background: ${theme.colors.card};
+          font-weight: ${theme.typography.weights.semibold};
+          background: rgba(255,255,255,0.82);
         }
 
         tbody tr:hover td{
-          background: rgba(17,24,39,0.03);
+          background: rgba(244,114,182,0.06);
         }
 
         tbody tr:last-child td{

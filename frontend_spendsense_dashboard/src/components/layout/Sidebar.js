@@ -10,6 +10,7 @@ export function Sidebar({ isOpen, onClose }) {
     <>
       <aside className={`ss-sidebar ${isOpen ? "open" : ""}`} aria-label="Primary">
         <div className="ss-sidebar__brand">
+          <div className="ss-sidebar__brandGlow" aria-hidden="true" />
           <div className="ss-sidebar__name">SpendSense</div>
           <div className="ss-sidebar__tag">Analytics Dashboard</div>
         </div>
@@ -30,8 +31,8 @@ export function Sidebar({ isOpen, onClose }) {
         </nav>
 
         <div className="ss-sidebar__footer">
-          <div className="ss-sidebar__metaTitle">Overview</div>
-          <div className="ss-sidebar__metaSub">Clean • Bright • Orange accent</div>
+          <div className="ss-sidebar__metaTitle">Ocean Professional</div>
+          <div className="ss-sidebar__metaSub">Soft gradients • Modern fintech • Focus-first</div>
         </div>
       </aside>
 
@@ -51,25 +52,44 @@ export function Sidebar({ isOpen, onClose }) {
           flex-direction:column;
           gap:${theme.spacing.lg}px;
 
-          background:${theme.colors.sidebar};
+          background: rgba(255,255,255,0.82);
+          backdrop-filter: blur(12px);
           border-right: 1px solid ${theme.colors.border};
         }
 
         .ss-sidebar__brand{
           padding:${theme.spacing.md}px;
+          border-radius:${theme.radii.xl}px;
+          border: 1px solid ${theme.colors.borderSubtle};
+          background: ${theme.gradients.header};
+          position: relative;
+          overflow:hidden;
+        }
+
+        .ss-sidebar__brandGlow{
+          position:absolute;
+          inset:-40px;
+          background:
+            radial-gradient(260px 140px at 20% 10%, rgba(244,114,182,0.35), rgba(244,114,182,0) 60%),
+            radial-gradient(240px 140px at 85% 65%, rgba(245,158,11,0.30), rgba(245,158,11,0) 60%);
+          filter: blur(2px);
+          pointer-events:none;
         }
 
         .ss-sidebar__name{
+          position:relative;
           font-size:${theme.typography.sizes.lg}px;
-          font-weight:${theme.typography.weights.bold};
+          font-weight:${theme.typography.weights.black};
           color:${theme.colors.textStrong};
           line-height:${theme.typography.lineHeights.tight};
+          letter-spacing: 0.1px;
         }
 
         .ss-sidebar__tag{
+          position:relative;
           margin-top:2px;
           font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.medium};
+          font-weight:${theme.typography.weights.semibold};
           color:${theme.colors.textMuted};
         }
 
@@ -82,7 +102,7 @@ export function Sidebar({ isOpen, onClose }) {
         .ss-sidebar__link{
           height: 40px;
           padding: 8px 10px;
-          border-radius:${theme.radii.md}px;
+          border-radius:${theme.radii.lg}px;
 
           display:flex;
           align-items:center;
@@ -91,10 +111,10 @@ export function Sidebar({ isOpen, onClose }) {
           text-decoration:none;
           color:${theme.colors.text};
           font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.medium};
+          font-weight:${theme.typography.weights.bold};
 
           border: 1px solid transparent;
-          transition: background 140ms ease, border-color 140ms ease, transform 140ms ease, color 140ms ease;
+          transition: background 140ms ease, border-color 140ms ease, transform 140ms ease, color 140ms ease, box-shadow 140ms ease;
         }
 
         .ss-sidebar__icon{
@@ -107,40 +127,42 @@ export function Sidebar({ isOpen, onClose }) {
         }
 
         .ss-sidebar__link:hover{
-          background: rgba(249,115,22,0.06);
+          background: rgba(244,114,182,0.08);
           transform: translateY(-1px);
-          border-color: rgba(249,115,22,0.10);
+          border-color: rgba(244,114,182,0.16);
         }
 
         .ss-sidebar__link.active{
-          background: rgba(249,115,22,0.10);
-          border-color: rgba(249,115,22,0.16);
+          background: ${theme.gradients.accentSoft};
+          border-color: rgba(244,114,182,0.22);
           color:${theme.colors.textStrong};
+          box-shadow: ${theme.shadows.sm};
         }
 
         .ss-sidebar__link.active .ss-sidebar__icon{
-          background:${theme.colors.orange};
+          background:${theme.colors.primary};
           opacity:1;
         }
 
         .ss-sidebar__footer{
           margin-top:auto;
           padding:${theme.spacing.md}px;
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border: 1px solid ${theme.colors.borderSubtle};
-          background:${theme.colors.mutedSurface};
+          background: rgba(255,255,255,0.72);
+          box-shadow: ${theme.shadows.sm};
         }
 
         .ss-sidebar__metaTitle{
           font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.semibold};
+          font-weight:${theme.typography.weights.black};
           color:${theme.colors.textStrong};
         }
 
         .ss-sidebar__metaSub{
           margin-top:2px;
           font-size:${theme.typography.sizes.xs}px;
-          font-weight:${theme.typography.weights.medium};
+          font-weight:${theme.typography.weights.semibold};
           color:${theme.colors.textMuted};
           line-height:${theme.typography.lineHeights.normal};
         }

@@ -46,24 +46,28 @@ export function Button({
 
   const variants = {
     primary: {
-      bg: theme.colors.orange,
+      /**
+       * Use a rose→purple gradient for the main CTA.
+       * Keep text white for contrast.
+       */
+      bg: theme.gradients.accent,
       color: "#FFFFFF",
       border: "transparent",
-      hoverBg: theme.colors.orangeHover,
-      activeBg: shade(theme.colors.orangeHover, -10),
-      shadow: theme.shadows.sm,
-      focus: "rgba(249,115,22,0.32)",
-      focusSoft: "rgba(249,115,22,0.14)",
+      hoverBg: "linear-gradient(135deg, rgba(244,114,182,0.92), rgba(168,85,247,0.92))",
+      activeBg: "linear-gradient(135deg, rgba(244,114,182,0.82), rgba(168,85,247,0.82))",
+      shadow: `${theme.shadows.sm}, ${theme.shadows.glowPink}`,
+      focus: theme.effects.focusRing,
+      focusSoft: theme.effects.focusSoft,
     },
     secondary: {
-      bg: theme.colors.card,
+      bg: "rgba(255,255,255,0.86)",
       color: theme.colors.textStrong,
       border: theme.colors.border,
-      hoverBg: theme.colors.mutedSurface,
-      activeBg: "rgba(17,24,39,0.06)",
+      hoverBg: "rgba(244,114,182,0.10)",
+      activeBg: "rgba(244,114,182,0.14)",
       shadow: "none",
-      focus: "rgba(17,24,39,0.18)",
-      focusSoft: "rgba(17,24,39,0.08)",
+      focus: theme.effects.focusRing,
+      focusSoft: theme.effects.focusSoft,
     },
     ghost: {
       bg: "transparent",
@@ -72,18 +76,18 @@ export function Button({
       hoverBg: "rgba(17,24,39,0.04)",
       activeBg: "rgba(17,24,39,0.06)",
       shadow: "none",
-      focus: "rgba(17,24,39,0.18)",
-      focusSoft: "rgba(17,24,39,0.08)",
+      focus: theme.effects.focusRing,
+      focusSoft: theme.effects.focusSoft,
     },
     danger: {
-      bg: theme.colors.red,
+      bg: theme.colors.danger,
       color: "#FFFFFF",
       border: "transparent",
-      hoverBg: shade(theme.colors.red, -14),
-      activeBg: shade(theme.colors.red, -22),
+      hoverBg: shade(theme.colors.danger, -14),
+      activeBg: shade(theme.colors.danger, -22),
       shadow: "none",
-      focus: "rgba(239,68,68,0.35)",
-      focusSoft: "rgba(239,68,68,0.14)",
+      focus: "rgba(239,68,68,0.40)",
+      focusSoft: "rgba(239,68,68,0.16)",
     },
   };
 
@@ -110,13 +114,29 @@ export function Button({
           cursor:pointer;
           transition:
             transform 140ms ease,
-            box-shadow 140ms ease,
-            background 140ms ease,
+            box-shadow 160ms ease,
+            background 160ms ease,
             opacity 140ms ease,
-            border-color 140ms ease;
+            border-color 140ms ease,
+            filter 160ms ease;
           box-shadow: ${v.shadow || "none"};
           position: relative;
           white-space:nowrap;
+          letter-spacing: 0.1px;
+        }
+
+        /* Soft highlight overlay for gradient button to feel more "fintech" */
+        .ss-btn--primary::after{
+          content:"";
+          position:absolute;
+          inset:0;
+          border-radius: inherit;
+          background:
+            radial-gradient(700px 120px at 20% 0%, rgba(255,255,255,0.40), rgba(255,255,255,0) 60%),
+            radial-gradient(500px 180px at 80% 100%, rgba(255,255,255,0.18), rgba(255,255,255,0) 65%);
+          pointer-events:none;
+          opacity: 0.9;
+          transition: opacity 160ms ease;
         }
 
         .ss-btn:hover{
@@ -124,9 +144,18 @@ export function Button({
           transform: translateY(-1px);
         }
 
+        .ss-btn--primary:hover{
+          filter: saturate(1.02);
+        }
+
+        .ss-btn--primary:hover::after{
+          opacity: 1;
+        }
+
         .ss-btn:active{
           background:${v.activeBg || v.hoverBg};
           transform: translateY(0);
+          filter: saturate(0.98);
         }
 
         .ss-btn:disabled{
@@ -134,6 +163,7 @@ export function Button({
           cursor:not-allowed;
           transform:none;
           box-shadow:none;
+          filter:none;
         }
 
         .ss-btn:focus-visible{

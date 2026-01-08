@@ -48,7 +48,15 @@ export function SettingsPage() {
             </label>
           </div>
 
-          <div style={{ marginTop: theme.spacing.lg, display: "flex", gap: theme.spacing.md, alignItems: "center" }}>
+          <div
+            style={{
+              marginTop: theme.spacing.lg,
+              display: "flex",
+              gap: theme.spacing.md,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <Badge tone="info">Saved locally (mock)</Badge>
             <Button variant="secondary" size="sm">Save changes</Button>
           </div>
@@ -92,12 +100,14 @@ export function SettingsPage() {
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.lg}px;
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.70);
+          background: rgba(255,255,255,0.72);
+          box-shadow: ${theme.shadows.sm};
+          backdrop-filter: blur(10px);
         }
-        .ss-setting__title{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
-        .ss-setting__desc{ margin-top:${theme.spacing.sm}px; font-size:12px; color:${theme.colors.mutedText}; font-weight:700; }
+        .ss-setting__title{ font-size:13px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
+        .ss-setting__desc{ margin-top:${theme.spacing.sm}px; font-size:12px; color:${theme.colors.textMuted}; font-weight:${theme.typography.weights.semibold}; }
 
         .ss-switch{ position:relative; display:inline-block; width: 46px; height: 28px; }
         .ss-switch input{ opacity:0; width:0; height:0; }
@@ -114,14 +124,14 @@ export function SettingsPage() {
           height: 22px; width: 22px;
           left: 3px; top: 50%;
           transform: translateY(-50%);
-          background: ${theme.colors.surface};
+          background: rgba(255,255,255,0.92);
           border-radius:${theme.radii.pill}px;
-          box-shadow: 0 6px 16px rgba(17,24,39,0.16);
+          box-shadow: 0 10px 24px rgba(17,24,39,0.16);
           transition: 160ms ease;
         }
         .ss-switch input:checked + .ss-switch__slider{
-          background: rgba(244,114,182,0.22);
-          border-color: rgba(244,114,182,0.35);
+          background: ${theme.gradients.accentSoft};
+          border-color: rgba(244,114,182,0.30);
         }
         .ss-switch input:checked + .ss-switch__slider:before{
           transform: translate(18px, -50%);
@@ -131,21 +141,25 @@ export function SettingsPage() {
         }
 
         .ss-form{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
-        .ss-label{ display:flex; flex-direction:column; gap:${theme.spacing.sm}px; font-size:12px; font-weight:900; color:${theme.colors.text}; }
+        .ss-label{ display:flex; flex-direction:column; gap:${theme.spacing.sm}px; font-size:12px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
         .ss-input{
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background:${theme.colors.surface};
+          background: rgba(255,255,255,0.86);
           padding: 11px 14px;
           font-size: 13px;
           outline:none;
-          transition: box-shadow 140ms ease, border-color 140ms ease;
+          transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+          color: ${theme.colors.text};
+          font-weight:${theme.typography.weights.semibold};
+          backdrop-filter: blur(10px);
         }
         .ss-input:focus{
           border-color: rgba(244,114,182,0.45);
           box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+          background: rgba(255,255,255,0.98);
         }
-        .ss-actions{ display:flex; gap:${theme.spacing.md}px; margin-top:${theme.spacing.md}px; }
+        .ss-actions{ display:flex; gap:${theme.spacing.md}px; margin-top:${theme.spacing.md}px; flex-wrap:wrap; }
 
         @media (max-width: 1100px){
           .ss-grid{ grid-template-columns: 1fr; }

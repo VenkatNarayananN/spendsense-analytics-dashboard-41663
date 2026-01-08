@@ -1,16 +1,29 @@
-/* SpendSense - Screenshot Theme
+/* SpendSense - Ocean Professional Theme
    Source of truth:
    - assets/style_guide.md
    - assets/component_specs.md
 */
 
-/* ---- Extracted Tokens (CSS variables) ---- */
+/* ---- Theme Tokens (CSS variables) ---- */
 :root{
+  /* Brand */
+  --brand-primary: #F472B6;
+  --brand-secondary: #F59E0B;
+
   /* Canvas / surfaces */
-  --bg-canvas: #F7E6EF;
+  --bg-canvas: #FDF2F8;
   --bg-sidebar: #FFFFFF;
   --bg-card: #FFFFFF;
-  --bg-muted: #F6F7F9;
+  --bg-muted: rgba(255,255,255,0.72);
+
+  /* Gradients */
+  --grad-canvas:
+    radial-gradient(1200px 700px at 10% 0%, rgba(244,114,182,0.18), rgba(244,114,182,0) 55%),
+    radial-gradient(900px 520px at 95% 8%, rgba(245,158,11,0.18), rgba(245,158,11,0) 55%),
+    linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.72));
+  --grad-header: linear-gradient(90deg, rgba(244,114,182,0.14), rgba(245,158,11,0.12));
+  --grad-accent: linear-gradient(135deg, rgba(244,114,182,1), rgba(168,85,247,1));
+  --grad-accent-soft: linear-gradient(135deg, rgba(244,114,182,0.16), rgba(168,85,247,0.10));
 
   /* Text */
   --text-strong: #111827;
@@ -18,28 +31,23 @@
   --text-muted: #6B7280;
   --text-disabled: #9CA3AF;
 
-  /* Borders / dividers */
-  --border-default: #E5E7EB;
-  --border-subtle: #EEF2F7;
-
-  /* Brand / accent */
-  --accent-orange: #F97316;
-  --accent-orange-hover: #EA580C;
-  --accent-orange-soft: #FFEDD5;
-  --accent-red: #EF4444;
-  --accent-red-soft: #FEE2E2;
+  /* Borders */
+  --border-default: rgba(17,24,39,0.10);
+  --border-subtle: rgba(17,24,39,0.06);
 
   /* Status */
-  --success: #22C55E;
+  --success: #10B981;
   --warning: #F59E0B;
   --danger: #EF4444;
 
   /* Effects */
   --shadow-sm: 0 1px 2px rgba(16,24,40,0.08);
-  --shadow-md: 0 6px 18px rgba(16,24,40,0.10);
+  --shadow-md: 0 10px 30px rgba(16,24,40,0.10);
+  --glow-pink: 0 18px 50px rgba(244,114,182,0.18);
+  --glow-amber: 0 18px 50px rgba(245,158,11,0.16);
 
   /* Typography */
-  --font-family: "Helvetica Neue", Arial, sans-serif;
+  --font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
 
   --text-xs: 12px;
   --text-sm: 13px;
@@ -51,6 +59,7 @@
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
+  --weight-black: 900;
 
   --line-tight: 1.2;
   --line-normal: 1.4;
@@ -65,9 +74,9 @@
   --space-8: 32px;
 
   /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
   --radius-xl: 16px;
   --radius-pill: 999px;
 }
@@ -81,14 +90,55 @@ body{
   margin:0;
   font-family: var(--font-family);
   color: var(--text-default);
-  background: var(--bg-canvas);
+  background: var(--grad-canvas);
 }
 
 /* Accessible focus outlines globally */
 :focus-visible{
-  outline: 3px solid rgba(249,115,22,0.30);
+  outline: 3px solid rgba(244,114,182,0.45);
   outline-offset: 2px;
 }
 
 a{ color: inherit; }
 .App{ min-height:100vh; }
+
+/* ---- Shared utility surfaces (used across pages) ---- */
+.ss-glass{
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.ss-sectionHeader{
+  background: var(--grad-header);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.ss-fieldLabel{
+  font-size: 11px;
+  font-weight: var(--weight-black);
+  color: var(--text-muted);
+  letter-spacing: 0.25px;
+}
+
+.ss-inputBase{
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background: rgba(255,255,255,0.86);
+  padding: 11px 14px;
+  font-size: 13px;
+  outline:none;
+  transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+  color: var(--text-default);
+  font-weight: 800;
+}
+
+.ss-inputBase::placeholder{ color: rgba(55,65,81,0.52); font-weight: 700; }
+
+.ss-inputBase:focus{
+  border-color: rgba(244,114,182,0.42);
+  box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+  background: rgba(255,255,255,0.98);
+}

@@ -32,11 +32,9 @@ export function AppShell({ children }) {
           </main>
 
           {/* Right rail is rendered by DashboardPage only (so non-dashboard pages keep their layouts).
-              We still reserve the column for >=900px to match the screenshot feel. */}
+              We still reserve the column for >=900px to match the intended dashboard feel. */}
           <aside className="ss-rightRail" aria-label="Summary rail">
-            <div className="ss-rightRail__hint">
-              {/* visually empty by default; dashboard injects its own rail. */}
-            </div>
+            <div className="ss-rightRail__hint">{/* dashboard injects its own rail */}</div>
           </aside>
         </div>
       </div>
@@ -44,7 +42,7 @@ export function AppShell({ children }) {
       <style>{`
         .ss-app{
           min-height:100vh;
-          background: ${theme.colors.canvas};
+          background: ${theme.gradients.canvas};
           color: ${theme.colors.text};
           display:flex;
         }

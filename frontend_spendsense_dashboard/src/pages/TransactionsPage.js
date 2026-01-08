@@ -229,9 +229,7 @@ export function TransactionsPage() {
               <Button variant="secondary" size="sm" onClick={resetFilters} aria-label="Reset filters">
                 Reset
               </Button>
-              <Badge tone="info">
-                {(fetchState.data || []).length} results
-              </Badge>
+              <Badge tone="info">{(fetchState.data || []).length} results</Badge>
             </div>
           </div>
         </div>
@@ -301,26 +299,27 @@ export function TransactionsPage() {
 
         .ss-field__label{
           font-size: 11px;
-          font-weight: 900;
-          color: ${theme.colors.mutedText};
+          font-weight: ${theme.typography.weights.black};
+          color: ${theme.colors.textMuted};
           letter-spacing: 0.25px;
         }
 
         .ss-input, .ss-select{
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.88);
+          background: rgba(255,255,255,0.86);
           padding: 11px 14px;
           font-size: 13px;
           outline:none;
           transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
           color: ${theme.colors.text};
-          font-weight: 800;
+          font-weight: ${theme.typography.weights.semibold};
+          backdrop-filter: blur(10px);
         }
 
-        .ss-input::placeholder{ color: rgba(55,65,81,0.52); font-weight: 700; }
+        .ss-input::placeholder{ color: rgba(55,65,81,0.52); font-weight: ${theme.typography.weights.medium}; }
         .ss-input{ width: 100%; }
-        .ss-select{ font-weight:900; }
+        .ss-select{ font-weight:${theme.typography.weights.black}; }
 
         .ss-input:focus, .ss-select:focus{
           border-color: rgba(244,114,182,0.42);
@@ -355,22 +354,23 @@ export function TransactionsPage() {
           padding: 8px 10px;
           border-radius:${theme.radii.pill}px;
           border: 1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.80);
+          background: rgba(255,255,255,0.78);
           color: ${theme.colors.text};
           font-size: 12px;
-          font-weight: 900;
+          font-weight: ${theme.typography.weights.black};
           cursor:pointer;
           transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+          backdrop-filter: blur(10px);
         }
 
         .ss-chip:hover{
-          background: rgba(244,114,182,0.10);
-          border-color: rgba(244,114,182,0.18);
+          background: ${theme.gradients.accentSoft};
+          border-color: rgba(244,114,182,0.20);
           transform: translateY(-1px);
         }
 
         .ss-chip:focus-visible{
-          outline: 3px solid rgba(244,114,182,0.45);
+          outline: 3px solid ${theme.effects.focusRing};
           outline-offset: 2px;
         }
 

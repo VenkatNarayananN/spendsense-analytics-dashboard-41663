@@ -163,7 +163,7 @@ export function DashboardPage() {
 
         .ss-statValue{
           font-size: 28px;
-          font-weight:${theme.typography.weights.bold};
+          font-weight:${theme.typography.weights.black};
           color:${theme.colors.textStrong};
         }
         .ss-statHint{
@@ -183,7 +183,7 @@ export function DashboardPage() {
         .ss-progress__bar{
           height:100%;
           border-radius:${theme.radii.pill}px;
-          background: ${theme.colors.orange};
+          background: ${theme.gradients.accent};
         }
 
         .ss-footnote{
@@ -200,19 +200,21 @@ export function DashboardPage() {
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.md}px;
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border: 1px solid ${theme.colors.borderSubtle};
-          background: ${theme.colors.mutedSurface};
+          background: rgba(255,255,255,0.72);
+          box-shadow: ${theme.shadows.sm};
+          backdrop-filter: blur(10px);
         }
-        .ss-listItem__title{ font-size:${theme.typography.sizes.sm}px; font-weight:${theme.typography.weights.semibold}; color:${theme.colors.textStrong}; }
-        .ss-listItem__sub{ margin-top:2px; font-size:${theme.typography.sizes.xs}px; color:${theme.colors.textMuted}; font-weight:${theme.typography.weights.medium}; }
+        .ss-listItem__title{ font-size:${theme.typography.sizes.sm}px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
+        .ss-listItem__sub{ margin-top:2px; font-size:${theme.typography.sizes.xs}px; color:${theme.colors.textMuted}; font-weight:${theme.typography.weights.semibold}; }
         .ss-listItem__right{ display:flex; flex-direction:column; align-items:flex-end; gap:${theme.spacing.sm}px; }
-        .ss-listItem__amount{ font-size:${theme.typography.sizes.sm}px; font-weight:${theme.typography.weights.semibold}; color:${theme.colors.textStrong}; }
+        .ss-listItem__amount{ font-size:${theme.typography.sizes.sm}px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
 
         .ss-link{
           font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.medium};
-          color:${theme.colors.orange};
+          font-weight:${theme.typography.weights.bold};
+          color:${theme.colors.primary};
         }
 
         .ss-rows{ display:flex; flex-direction:column; gap:10px; }
@@ -233,7 +235,7 @@ export function DashboardPage() {
         .ss-row__label{
           font-size:${theme.typography.sizes.sm}px;
           color:${theme.colors.textMuted};
-          font-weight:${theme.typography.weights.medium};
+          font-weight:${theme.typography.weights.semibold};
         }
         .ss-row__value{
           display:flex;
@@ -241,7 +243,7 @@ export function DashboardPage() {
           gap:${theme.spacing.sm}px;
           font-size:${theme.typography.sizes.sm}px;
           color:${theme.colors.textStrong};
-          font-weight:${theme.typography.weights.semibold};
+          font-weight:${theme.typography.weights.black};
           text-align:right;
           white-space:nowrap;
         }
@@ -252,27 +254,27 @@ export function DashboardPage() {
           bottom: 16px;
           z-index: 50;
 
-          width: 40px;
-          height: 40px;
+          width: 42px;
+          height: 42px;
           border-radius: 999px;
           border: none;
 
-          background: ${theme.colors.orange};
+          background: ${theme.gradients.accent};
           color: #fff;
           font-size: 22px;
           line-height: 1;
-          box-shadow: ${theme.shadows.md};
+          box-shadow: ${theme.shadows.md}, ${theme.shadows.glowPink};
           cursor: pointer;
-          transition: background 140ms ease, transform 140ms ease;
+          transition: transform 140ms ease, filter 140ms ease;
         }
 
         .ss-fab:hover{
-          background: ${theme.colors.orangeHover};
           transform: translateY(-1px);
+          filter: saturate(1.05);
         }
 
         .ss-fab:focus-visible{
-          outline: 3px solid rgba(249,115,22,0.30);
+          outline: 3px solid ${theme.effects.focusRing};
           outline-offset: 2px;
         }
 

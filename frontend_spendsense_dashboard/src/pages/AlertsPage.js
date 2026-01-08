@@ -63,11 +63,9 @@ export function AlertsPage() {
     });
   }, [search, severity, type]);
 
-  const fetchState = useMockFetch(
-    () => filtered,
-    [filtered.length, search, severity, type],
-    { delayMs: 450 }
-  );
+  const fetchState = useMockFetch(() => filtered, [filtered.length, search, severity, type], {
+    delayMs: 450,
+  });
 
   const activeCount = useMemo(() => {
     let n = 0;
@@ -131,12 +129,7 @@ export function AlertsPage() {
             <div className="ss-controls__meta">
               <Badge tone="info">{(fetchState.data || []).length} results</Badge>
               {activeCount > 0 && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={reset}
-                  aria-label="Clear filters"
-                >
+                <Button variant="secondary" size="sm" onClick={reset} aria-label="Clear filters">
                   Clear filters
                 </Button>
               )}
@@ -201,24 +194,25 @@ export function AlertsPage() {
 
         .ss-field__label{
           font-size: 11px;
-          font-weight: 900;
-          color: ${theme.colors.mutedText};
+          font-weight: ${theme.typography.weights.black};
+          color: ${theme.colors.textMuted};
           letter-spacing: 0.25px;
         }
 
         .ss-input, .ss-select{
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.88);
+          background: rgba(255,255,255,0.86);
           padding: 11px 14px;
           font-size: 13px;
           outline:none;
           transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
           color: ${theme.colors.text};
-          font-weight: 800;
+          font-weight: ${theme.typography.weights.semibold};
+          backdrop-filter: blur(10px);
         }
 
-        .ss-input::placeholder{ color: rgba(55,65,81,0.52); font-weight: 700; }
+        .ss-input::placeholder{ color: rgba(55,65,81,0.52); font-weight: ${theme.typography.weights.medium}; }
 
         .ss-input:focus, .ss-select:focus{
           border-color: rgba(244,114,182,0.42);
@@ -248,19 +242,20 @@ export function AlertsPage() {
           justify-content:space-between;
           gap:${theme.spacing.lg}px;
           padding:${theme.spacing.lg}px;
-          border-radius:${theme.radii.lg}px;
+          border-radius:${theme.radii.xl}px;
           border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.80);
+          background: rgba(255,255,255,0.78);
           color: ${theme.colors.text};
-          box-shadow: ${theme.colors.elevation1};
+          box-shadow: ${theme.shadows.sm};
+          backdrop-filter: blur(10px);
         }
 
-        .ss-alert__title{ font-size:13px; font-weight:900; color:${theme.colors.text}; }
+        .ss-alert__title{ font-size:13px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
         .ss-alert__detail{
           margin-top:${theme.spacing.sm}px;
           font-size:12.5px;
-          color: ${theme.colors.mutedText};
-          font-weight:700;
+          color: ${theme.colors.textMuted};
+          font-weight:${theme.typography.weights.semibold};
           line-height:1.55;
         }
         .ss-alert__meta{
@@ -272,7 +267,7 @@ export function AlertsPage() {
         }
         .ss-alert__id{
           font-size: 11px;
-          font-weight: 900;
+          font-weight: ${theme.typography.weights.black};
           color: rgba(55,65,81,0.55);
           font-family:${theme.typography.monoFamily};
         }
