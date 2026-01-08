@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
+import { LiveBadge } from "../components/ui/LiveBadge";
 import { AreaChartPro } from "../components/charts";
 import { theme } from "../theme";
 import { useAuth } from "../auth/AuthContext";
 import { listTransactions } from "../lib/supabaseClient/db";
+import { subscribeToTableChanges } from "../lib/supabaseClient/realtime";
 import { EmptyState } from "../components/ui/EmptyState";
 import { CardSkeleton } from "../components/ui/Skeleton";
 
@@ -22,7 +24,7 @@ function monthPrefix(d = new Date()) {
  * PUBLIC_INTERFACE
  */
 export function DashboardPage() {
-  const { session, supabaseConfigured } = useAuth();
+  const { session, user, supabaseConfigured } = useAuth();
 
   const [rows, setRows] = useState([]);
   const [fetchState, setFetchState] = useState({ loading: true, error: null });
@@ -50,6 +52,46 @@ export function DashboardPage() {
     if (!session?.user?.id) return;
     load();
   }, [load, session?.user?.id]);
+
+  // Realtime subscription: refresh dashboard when transactions are inserted/updated.
+  // Uses shared helper already used by Transactions/Alerts pages.
+  const subRef = useRef(null);
+  useEffect(() => {
+    let alive = true;
+
+    async function sub() {
+      if (!supabaseConfigured || !user?.id) return;
+
+      try {
+        const s = await subscribeToTableChanges({
+          table: "transactions",
+          filter: `user_id=eq.${user.id}`,
+          onChange: (payload) => {
+            const evt = payload?.eventType;
+            if (evt !== "INSERT" && evt !== "UPDATE") return;
+
+            // Simplest reliable approach: refetch (keeps charts/metrics consistent).
+            if (alive) load();
+          },
+        });
+        subRef.current = s;
+      } catch {
+        // Non-fatal: dashboard still loads via fetch; realtime may be unavailable in some envs.
+      }
+    }
+
+    sub();
+
+    return () => {
+      alive = false;
+      try {
+        subRef.current?.unsubscribe?.();
+      } catch {
+        // ignore
+      }
+      subRef.current = null;
+    };
+  }, [load, supabaseConfigured, user?.id]);
 
   const month = useMemo(() => monthPrefix(new Date()), []);
   const monthlySpend = useMemo(() => {
@@ -87,13 +129,17 @@ export function DashboardPage() {
         <EmptyState
           icon="⚠"
           title="Unable to load dashboard"
-          description={fetchState.error?.message || "An unexpected error occurred while loading your dashboard."}
+          description={
+            fetchState.error?.message || "An unexpected error occurred while loading your dashboard."
+          }
           primaryActionLabel="Retry"
           onPrimaryAction={load}
         />
       </div>
     );
   }
+
+  const realtimeEnabled = !!(supabaseConfigured && user?.id);
 
   return (
     <>
@@ -224,10 +270,19 @@ export function DashboardPage() {
             <div className="ss-footnote">Create flows are not implemented in this UI template.</div>
           </Card>
 
-          <Card title="Status" subtitle="Connectivity">
+          <Card
+            title="Status"
+            subtitle="Connectivity"
+            action={realtimeEnabled ? <LiveBadge /> : null}
+          >
             <div className="ss-rows">
               <Row label="Sync" value="Online" badgeTone="success" />
               <Row label="Source" value="Supabase" badgeTone="info" />
+              <Row
+                label="Realtime"
+                value={realtimeEnabled ? "Enabled" : "Unavailable"}
+                badgeTone={realtimeEnabled ? "success" : "neutral"}
+              />
             </div>
           </Card>
         </aside>
