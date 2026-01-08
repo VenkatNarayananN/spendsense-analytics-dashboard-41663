@@ -4,6 +4,7 @@ import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { theme } from "../theme";
 import { useAuth } from "../auth/AuthContext";
+import { runTransactionsSeedOnly } from "../lib/supabaseClient/seed";
 
 /**
  * PUBLIC_INTERFACE
@@ -45,6 +46,32 @@ export function SettingsPage() {
       setSeedState({
         status: "error",
         message: e?.message || "Unable to generate sample data.",
+        mode: "",
+      });
+    }
+  };
+
+  const onSeedTransactionsOnly = async () => {
+    setSeedState({ status: "working", message: "Seeding transactions…", mode: "" });
+    try {
+      const res = await runTransactionsSeedOnly({ countTransactions: 28 });
+      if (res?.ok) {
+        setSeedState({
+          status: "success",
+          message: res.message || "Transactions seeded.",
+          mode: res.mode || "",
+        });
+      } else {
+        setSeedState({
+          status: "error",
+          message: res?.message || "Unable to seed transactions.",
+          mode: res?.mode || "",
+        });
+      }
+    } catch (e) {
+      setSeedState({
+        status: "error",
+        message: e?.message || "Unable to seed transactions.",
         mode: "",
       });
     }
@@ -156,11 +183,17 @@ export function SettingsPage() {
                     {seedState.status === "working" ? "Generating…" : "Generate sample data"}
                   </Button>
 
+                  <Button
+                    variant="secondary"
+                    onClick={onSeedTransactionsOnly}
+                    disabled={seedState.status === "working"}
+                  >
+                    {seedState.status === "working" ? "Working…" : "Seed transactions only"}
+                  </Button>
+
                   {seedState.message ? (
                     <div className="ss-demo__status" aria-live="polite">
-                      <Badge tone={seedTone}>
-                        {seedState.message}
-                      </Badge>
+                      <Badge tone={seedTone}>{seedState.message}</Badge>
                     </div>
                   ) : (
                     <Badge tone="info">Supabase only</Badge>

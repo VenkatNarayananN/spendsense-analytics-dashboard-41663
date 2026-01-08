@@ -107,24 +107,10 @@ function seedToLocalStorage({ transactions, alerts }) {
 }
 
 /**
- * PUBLIC_INTERFACE
+ * Internal shared seeding worker used by the exported seed entry points.
+ * This keeps all modes (combined vs transactions-only) consistent.
  */
-export async function generateSampleDataSeed(options = {}) {
-  /**
-   * Generate realistic sample data for the current logged-in user.
-   *
-   * Behavior:
-   * - If Supabase is configured + available + a session exists:
-   *    attempts to insert rows into `transactions` and `alerts` tables.
-   * - Otherwise:
-   *    falls back to saving demo data into localStorage.
-   *
-   * Options:
-   * - countTransactions: number (default 24)
-   * - countAlerts: number (default 6)
-   */
-  const { countTransactions = 24, countAlerts = 6 } = options;
-
+async function seedDemoDataInternal({ countTransactions = 24, countAlerts = 6, seedAlerts = true } = {}) {
   // 1) Try Supabase path (best effort, fully guarded).
   const supabase = await getSupabaseClient();
   if (supabase) {
@@ -149,13 +135,17 @@ export async function generateSampleDataSeed(options = {}) {
       const txInsert = await supabase.from("transactions").insert(demoRows.transactions);
       if (txInsert?.error) throw txInsert.error;
 
-      const alInsert = await supabase.from("alerts").insert(demoRows.alerts);
-      if (alInsert?.error) throw alInsert.error;
+      if (seedAlerts) {
+        const alInsert = await supabase.from("alerts").insert(demoRows.alerts);
+        if (alInsert?.error) throw alInsert.error;
+      }
 
       return {
         ok: true,
         mode: "supabase",
-        message: `Seeded ${demoRows.transactions.length} transactions and ${demoRows.alerts.length} alerts into Supabase.`,
+        message: seedAlerts
+          ? `Seeded ${demoRows.transactions.length} transactions and ${demoRows.alerts.length} alerts into Supabase.`
+          : `Seeded ${demoRows.transactions.length} transactions into Supabase.`,
       };
     } catch (e) {
       // Supabase available but schema / RLS / permissions missing; fall back to local.
@@ -175,4 +165,55 @@ export async function generateSampleDataSeed(options = {}) {
   // 2) No Supabase configured -> local demo seed.
   const demoRows = buildDemoRows({ userId: "demo_user", countTransactions, countAlerts });
   return seedToLocalStorage(demoRows);
+}
+
+/**
+ * PUBLIC_INTERFACE
+ */
+export async function generateSampleDataSeed(options = {}) {
+  /**
+   * Generate realistic sample data for the current logged-in user.
+   *
+   * Behavior:
+   * - If Supabase is configured + available + a session exists:
+   *    attempts to insert rows into `transactions` and (optionally) `alerts` tables.
+   * - Otherwise:
+   *    falls back to saving demo data into localStorage.
+   *
+   * Options:
+   * - countTransactions: number (default 24)
+   * - countAlerts: number (default 6)
+   */
+  const { countTransactions = 24, countAlerts = 6 } = options;
+  return seedDemoDataInternal({ countTransactions, countAlerts, seedAlerts: true });
+}
+
+/**
+ * PUBLIC_INTERFACE
+ */
+export async function runTransactionsSeedOnly(options = {}) {
+  /**
+   * Seeds ONLY realistic demo transactions for the current logged-in user.
+   * This is useful when you want to demo Transactions/Insights without adding Alerts noise.
+   *
+   * Options:
+   * - countTransactions: number (default 24)
+   */
+  const { countTransactions = 24 } = options;
+  return seedDemoDataInternal({ countTransactions, countAlerts: 0, seedAlerts: false });
+}
+
+/**
+ * PUBLIC_INTERFACE
+ */
+export async function runTransactionsAndAlertsSeed(options = {}) {
+  /**
+   * Alias for the combined seeding behavior; kept for explicitness in callers.
+   *
+   * Options:
+   * - countTransactions: number (default 24)
+   * - countAlerts: number (default 6)
+   */
+  const { countTransactions = 24, countAlerts = 6 } = options;
+  return seedDemoDataInternal({ countTransactions, countAlerts, seedAlerts: true });
 }
