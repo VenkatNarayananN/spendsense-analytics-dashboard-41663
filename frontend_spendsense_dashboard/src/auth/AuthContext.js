@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { generateSampleDataSeed } from "../lib/supabaseClient/seed";
 
 /**
  * AuthContext provides a minimal, placeholder authentication state for UI scaffolding.
@@ -43,13 +44,26 @@ export function AuthProvider({ children }) {
     return true;
   }, []);
 
+  // PUBLIC_INTERFACE
+  const generateSampleData = useCallback(async (options = {}) => {
+    /**
+     * Generates demo seed data in a safe, best-effort way.
+     * - Uses Supabase when configured + session exists + schema allows insert
+     * - Falls back to localStorage otherwise
+     *
+     * Returns: { ok, mode, message, error? }
+     */
+    return generateSampleDataSeed(options);
+  }, []);
+
   const value = useMemo(
     () => ({
       isAuthenticated,
       signIn,
       signOut,
+      generateSampleData,
     }),
-    [isAuthenticated, signIn, signOut]
+    [isAuthenticated, signIn, signOut, generateSampleData]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

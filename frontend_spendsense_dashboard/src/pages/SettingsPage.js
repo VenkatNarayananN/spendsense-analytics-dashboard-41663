@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { theme } from "../theme";
+import { useAuth } from "../auth/AuthContext";
 
 /**
  * PUBLIC_INTERFACE
@@ -11,6 +12,43 @@ export function SettingsPage() {
   const [emailReports, setEmailReports] = useState(true);
   const [anomalyPush, setAnomalyPush] = useState(false);
   const [profile, setProfile] = useState({ name: "Avery Chen", email: "avery@example.com" });
+
+  const { generateSampleData } = useAuth();
+
+  const [seedState, setSeedState] = useState({ status: "idle", message: "", mode: "" });
+
+  const seedTone = useMemo(() => {
+    if (seedState.status === "success") return "success";
+    if (seedState.status === "error") return "danger";
+    if (seedState.status === "working") return "info";
+    return "info";
+  }, [seedState.status]);
+
+  const onGenerateSampleData = async () => {
+    setSeedState({ status: "working", message: "Generating demo data…", mode: "" });
+    try {
+      const res = await generateSampleData({ countTransactions: 24, countAlerts: 6 });
+      if (res?.ok) {
+        setSeedState({
+          status: "success",
+          message: res.message || "Sample data generated.",
+          mode: res.mode || "",
+        });
+      } else {
+        setSeedState({
+          status: "error",
+          message: res?.message || "Unable to generate sample data.",
+          mode: res?.mode || "",
+        });
+      }
+    } catch (e) {
+      setSeedState({
+        status: "error",
+        message: e?.message || "Unable to generate sample data.",
+        mode: "",
+      });
+    }
+  };
 
   return (
     <div className="ss-page">
@@ -58,7 +96,9 @@ export function SettingsPage() {
             }}
           >
             <Badge tone="info">Saved locally (mock)</Badge>
-            <Button variant="secondary" size="sm">Save changes</Button>
+            <Button variant="secondary" size="sm">
+              Save changes
+            </Button>
           </div>
         </Card>
 
@@ -85,6 +125,45 @@ export function SettingsPage() {
             <div className="ss-actions">
               <Button variant="primary">Update profile</Button>
               <Button variant="ghost">Reset</Button>
+            </div>
+          </div>
+        </Card>
+
+        <Card
+          title="Demo tools"
+          subtitle="Generate realistic sample transactions and alerts for previews and demos"
+        >
+          <div className="ss-demo">
+            <div className="ss-demo__meta">
+              <div className="ss-demo__title">Generate sample data</div>
+              <div className="ss-demo__desc">
+                Seeds demo transactions + alerts into Supabase when available; otherwise saves a local demo seed.
+              </div>
+            </div>
+
+            <div className="ss-demo__actions">
+              <Button
+                variant="primary"
+                onClick={onGenerateSampleData}
+                disabled={seedState.status === "working"}
+              >
+                {seedState.status === "working" ? "Generating…" : "Generate sample data"}
+              </Button>
+
+              {seedState.message ? (
+                <div className="ss-demo__status" aria-live="polite">
+                  <Badge tone={seedTone}>
+                    {seedState.mode ? `${seedState.mode}: ` : ""}
+                    {seedState.message}
+                  </Badge>
+                </div>
+              ) : (
+                <Badge tone="info">Safe in demo mode</Badge>
+              )}
+            </div>
+
+            <div className="ss-demo__hint">
+              Tip: If Supabase tables/RLS aren’t configured, the app will gracefully fall back to local demo data.
             </div>
           </div>
         </Card>
@@ -160,6 +239,23 @@ export function SettingsPage() {
           background: rgba(255,255,255,0.98);
         }
         .ss-actions{ display:flex; gap:${theme.spacing.md}px; margin-top:${theme.spacing.md}px; flex-wrap:wrap; }
+
+        .ss-demo{
+          display:flex;
+          flex-direction:column;
+          gap:${theme.spacing.md}px;
+          padding:${theme.spacing.lg}px;
+          border-radius:${theme.radii.xl}px;
+          border: 1px dashed rgba(244,114,182,0.45);
+          background: linear-gradient(180deg, rgba(244,114,182,0.08), rgba(245,158,11,0.06));
+          box-shadow: ${theme.shadows.sm};
+        }
+        .ss-demo__meta{ display:flex; flex-direction:column; gap:${theme.spacing.sm}px; }
+        .ss-demo__title{ font-size: 13px; font-weight:${theme.typography.weights.black}; color:${theme.colors.textStrong}; }
+        .ss-demo__desc{ font-size: 12px; color:${theme.colors.textMuted}; font-weight:${theme.typography.weights.semibold}; line-height: 1.5; }
+        .ss-demo__actions{ display:flex; gap:${theme.spacing.md}px; align-items:center; flex-wrap:wrap; }
+        .ss-demo__status{ display:flex; align-items:center; }
+        .ss-demo__hint{ font-size: 12px; color:${theme.colors.textMuted}; font-weight:${theme.typography.weights.semibold}; }
 
         @media (max-width: 1100px){
           .ss-grid{ grid-template-columns: 1fr; }
