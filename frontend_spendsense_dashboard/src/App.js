@@ -12,6 +12,7 @@ import { SignUpPage } from "./pages/SignUpPage";
 import { AuthProvider } from "./auth/AuthContext";
 import { ProtectedRoute } from "./auth/ProtectedRoute";
 import { ThemeProvider } from "./theme/ThemeProvider";
+import { DemoProvider } from "./demo/DemoContext";
 
 // PUBLIC_INTERFACE
 function App() {
@@ -19,8 +20,9 @@ function App() {
     <BrowserRouter>
       <ThemeProvider>
         <AuthProvider>
-          <AppShell>
-            <Routes>
+          <DemoProvider>
+            <AppShell>
+              <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignUpPage />} />
 
@@ -68,6 +70,7 @@ function App() {
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </AppShell>
+          </DemoProvider>
         </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>

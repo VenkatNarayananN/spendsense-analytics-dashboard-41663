@@ -8,6 +8,8 @@ import { theme } from "../theme";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../auth/AuthContext";
 import { listInsightsSourceTransactions } from "../lib/supabaseClient/db";
+import { useDemo } from "../demo/DemoContext";
+import { getDemoTransactions } from "../demo/demoData";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -86,6 +88,7 @@ function buildTrends(rows) {
  */
 export function InsightsPage() {
   const { session, supabaseConfigured } = useAuth();
+  const { demoMode } = useDemo();
 
   const [timeRange, setTimeRange] = useState("30d");
   const [category, setCategory] = useState("All");
@@ -94,6 +97,31 @@ export function InsightsPage() {
   const [fetchState, setFetchState] = useState({ loading: true, error: null });
 
   const load = useCallback(async () => {
+    if (demoMode) {
+      // Demo mode: compute client-side from demo transactions.
+      const demoRows = getDemoTransactions().map((t) => ({
+        id: t.id,
+        user_id: "demo_user",
+        date: t.date,
+        category: t.category,
+        amount: t.amount,
+        merchant: t.merchant,
+        status: t.status,
+        created_at: new Date().toISOString(),
+      }));
+
+      const { from, to } = dateRangeForTimeRange(timeRange);
+      const filtered = demoRows.filter((r) => {
+        if (from && String(r.date || "") < from) return false;
+        if (to && String(r.date || "") > to) return false;
+        return true;
+      });
+
+      setRows(filtered);
+      setFetchState({ loading: false, error: null });
+      return;
+    }
+
     if (!supabaseConfigured) {
       setFetchState({ loading: false, error: new Error("Supabase is not configured.") });
       setRows([]);
@@ -116,12 +144,11 @@ export function InsightsPage() {
       setRows([]);
       setFetchState({ loading: false, error: e });
     }
-  }, [session?.user?.id, session, supabaseConfigured, timeRange]);
+  }, [demoMode, session?.user?.id, session, supabaseConfigured, timeRange]);
 
   useEffect(() => {
-    if (!session?.user?.id) return;
     load();
-  }, [load, session?.user?.id]);
+  }, [load]);
 
   const categories = useMemo(() => {
     const base = uniq(rows.map((r) => r.category).filter(Boolean));
@@ -184,14 +211,14 @@ export function InsightsPage() {
             Refresh
           </Button>
 
-          <Badge tone="success">Live</Badge>
+          {demoMode ? <Badge tone="warning">Demo</Badge> : <Badge tone="success">Live</Badge>}
         </div>
       </div>
 
       <div className="ss-grid">
         <Card title="Category Performance" subtitle="Top categories">
           <div className="ss-section">
-            {fetchState.loading ? (
+            {fetchState.loading && !demoMode ? (
               <ChartSkeleton height={220} />
             ) : fetchState.error ? (
               <EmptyState

@@ -10,6 +10,8 @@ import { theme } from "../theme";
 import { useAuth } from "../auth/AuthContext";
 import { listTransactions } from "../lib/supabaseClient/db";
 import { subscribeToTableChanges } from "../lib/supabaseClient/realtime";
+import { useDemo } from "../demo/DemoContext";
+import { getDemoTransactions, makeDemoTransactionId } from "../demo/demoData";
 
 function formatMoney(v) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(v);
@@ -45,10 +47,22 @@ function inDateRange(iso, from, to) {
  */
 export function TransactionsPage() {
   const { session, user, supabaseConfigured } = useAuth();
+  const { demoMode } = useDemo();
 
   // Data state
   const [rows, setRows] = useState([]);
   const [fetchState, setFetchState] = useState({ loading: true, error: null });
+
+  // Demo-only create state (local-only; no Supabase writes).
+  const [demoCreate, setDemoCreate] = useState({
+    open: false,
+    merchant: "",
+    category: "Groceries",
+    method: "Card •••• 2048",
+    amount: "",
+    status: "Cleared",
+    date: new Date().toISOString().slice(0, 10),
+  });
 
   // Filters
   const [search, setSearch] = useState("");
@@ -70,6 +84,13 @@ export function TransactionsPage() {
   }, []);
 
   const load = useCallback(async () => {
+    // Demo mode: render immediately with mock data, no buffering.
+    if (demoMode) {
+      setRows(getDemoTransactions());
+      setFetchState({ loading: false, error: null });
+      return;
+    }
+
     if (!supabaseConfigured) {
       setFetchState({
         loading: false,
@@ -89,20 +110,20 @@ export function TransactionsPage() {
       setRows([]);
       setFetchState({ loading: false, error: e });
     }
-  }, [session?.user?.id, session, supabaseConfigured]);
+  }, [demoMode, session?.user?.id, session, supabaseConfigured]);
 
-  // Fetch on mount/session changes
+  // Fetch on mount/session changes (demo mode should still populate instantly)
   useEffect(() => {
-    if (!session?.user?.id) return;
     load();
-  }, [load, session?.user?.id]);
+  }, [load]);
 
-  // Realtime subscription
+  // Realtime subscription (disabled in demo mode)
   const subRef = useRef(null);
   useEffect(() => {
     let alive = true;
 
     async function sub() {
+      if (demoMode) return;
       if (!supabaseConfigured || !user?.id) return;
       try {
         const s = await subscribeToTableChanges({
@@ -130,7 +151,7 @@ export function TransactionsPage() {
       }
       subRef.current = null;
     };
-  }, [load, supabaseConfigured, user?.id]);
+  }, [demoMode, load, supabaseConfigured, user?.id]);
 
   const categories = useMemo(() => uniq(rows.map((t) => t.category).filter(Boolean)), [rows]);
   const statuses = useMemo(() => uniq(rows.map((t) => t.status).filter(Boolean)), [rows]);
@@ -200,16 +221,128 @@ export function TransactionsPage() {
     <div className="ss-page">
       <Card
         title="Transactions"
-        subtitle="Filter, search, and export your activity."
+        subtitle={demoMode ? "Demo mode: add and filter transactions locally (no sync)." : "Filter, search, and export your activity."}
         action={
           <div style={{ display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
-            <LiveBadge />
-            <Button variant="primary" size="sm">
-              Export
-            </Button>
+            {!demoMode ? <LiveBadge /> : <Badge tone="warning">Demo</Badge>}
+            {demoMode ? (
+              <Button variant="primary" size="sm" onClick={() => setDemoCreate((s) => ({ ...s, open: !s.open }))}>
+                {demoCreate.open ? "Close" : "New transaction"}
+              </Button>
+            ) : (
+              <Button variant="primary" size="sm">
+                Export
+              </Button>
+            )}
           </div>
         }
       >
+        {demoMode && demoCreate.open && (
+          <div className="ss-demoCreate" aria-label="Create demo transaction">
+            <div className="ss-demoCreate__title">New transaction (demo only)</div>
+            <div className="ss-demoCreate__grid">
+              <label className="ss-field">
+                <span className="ss-field__label">Merchant</span>
+                <input
+                  className="ss-input ss-input--dense"
+                  value={demoCreate.merchant}
+                  onChange={(e) => setDemoCreate((s) => ({ ...s, merchant: e.target.value }))}
+                  placeholder="e.g., Nimbus Grocers"
+                />
+              </label>
+
+              <label className="ss-field">
+                <span className="ss-field__label">Category</span>
+                <input
+                  className="ss-input ss-input--dense"
+                  value={demoCreate.category}
+                  onChange={(e) => setDemoCreate((s) => ({ ...s, category: e.target.value }))}
+                  placeholder="e.g., Groceries"
+                />
+              </label>
+
+              <label className="ss-field">
+                <span className="ss-field__label">Method</span>
+                <input
+                  className="ss-input ss-input--dense"
+                  value={demoCreate.method}
+                  onChange={(e) => setDemoCreate((s) => ({ ...s, method: e.target.value }))}
+                  placeholder="e.g., Card •••• 2048"
+                />
+              </label>
+
+              <label className="ss-field">
+                <span className="ss-field__label">Date</span>
+                <input
+                  className="ss-input ss-input--dense"
+                  type="date"
+                  value={demoCreate.date}
+                  onChange={(e) => setDemoCreate((s) => ({ ...s, date: e.target.value }))}
+                />
+              </label>
+
+              <label className="ss-field">
+                <span className="ss-field__label">Amount</span>
+                <input
+                  className="ss-input ss-input--dense"
+                  inputMode="decimal"
+                  value={demoCreate.amount}
+                  onChange={(e) => setDemoCreate((s) => ({ ...s, amount: e.target.value }))}
+                  placeholder="0.00"
+                />
+              </label>
+
+              <label className="ss-field">
+                <span className="ss-field__label">Status</span>
+                <select
+                  className="ss-select ss-select--dense"
+                  value={demoCreate.status}
+                  onChange={(e) => setDemoCreate((s) => ({ ...s, status: e.target.value }))}
+                >
+                  <option>Cleared</option>
+                  <option>Pending</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="ss-demoCreate__actions">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  const amt = Number(demoCreate.amount);
+                  const safeAmt = Number.isFinite(amt) ? amt : 0;
+                  const merchant = demoCreate.merchant.trim() || "New merchant";
+
+                  setRows((prev) => [
+                    {
+                      id: makeDemoTransactionId(),
+                      date: demoCreate.date || new Date().toISOString().slice(0, 10),
+                      merchant,
+                      category: demoCreate.category || "Uncategorized",
+                      method: demoCreate.method || "Card",
+                      amount: safeAmt,
+                      status: demoCreate.status || "Cleared",
+                    },
+                    ...prev,
+                  ]);
+
+                  setDemoCreate((s) => ({
+                    ...s,
+                    merchant: "",
+                    amount: "",
+                    open: false,
+                  }));
+                }}
+              >
+                Add (local)
+              </Button>
+
+              <Badge tone="info">This change is not saved to Supabase.</Badge>
+            </div>
+          </div>
+        )}
+
         <div className="ss-controls" aria-label="Transaction filters">
           <input
             className="ss-input"
@@ -332,7 +465,7 @@ export function TransactionsPage() {
         )}
 
         <div style={{ marginTop: theme.spacing.lg }}>
-          {fetchState.loading ? (
+          {fetchState.loading && !demoMode ? (
             <TableSkeleton columns={6} rows={7} />
           ) : fetchState.error ? (
             <EmptyState
@@ -360,6 +493,33 @@ export function TransactionsPage() {
 
       <style>{`
         .ss-page{ display:flex; flex-direction:column; gap:${theme.spacing.xl}px; }
+
+        .ss-demoCreate{
+          margin-top:${theme.spacing.md}px;
+          padding:${theme.spacing.lg}px;
+          border-radius:${theme.radii.xl}px;
+          border: 1px dashed color-mix(in srgb, var(--brand-primary) 45%, transparent);
+          background: var(--grad-stripe-subtle);
+          box-shadow: ${theme.shadows.sm};
+        }
+        .ss-demoCreate__title{
+          font-size: 13px;
+          font-weight:${theme.typography.weights.black};
+          color:${theme.colors.textStrong};
+        }
+        .ss-demoCreate__grid{
+          margin-top:${theme.spacing.md}px;
+          display:grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap:${theme.spacing.md}px;
+        }
+        .ss-demoCreate__actions{
+          margin-top:${theme.spacing.md}px;
+          display:flex;
+          flex-wrap:wrap;
+          gap:${theme.spacing.md}px;
+          align-items:center;
+        }
 
         .ss-controls{
           display:flex;
@@ -473,6 +633,10 @@ export function TransactionsPage() {
           background: transparent;
           border-style: dashed;
           color: ${theme.colors.text};
+        }
+
+        @media (max-width: 1100px){
+          .ss-demoCreate__grid{ grid-template-columns: 1fr; }
         }
       `}</style>
     </div>

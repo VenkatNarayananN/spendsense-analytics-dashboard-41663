@@ -10,6 +10,8 @@ import { listTransactions } from "../lib/supabaseClient/db";
 import { subscribeToTableChanges } from "../lib/supabaseClient/realtime";
 import { EmptyState } from "../components/ui/EmptyState";
 import { CardSkeleton } from "../components/ui/Skeleton";
+import { useDemo } from "../demo/DemoContext";
+import { getDemoTransactions } from "../demo/demoData";
 
 function formatMoney(v) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(v);
@@ -25,11 +27,19 @@ function monthPrefix(d = new Date()) {
  */
 export function DashboardPage() {
   const { session, user, supabaseConfigured } = useAuth();
+  const { demoMode } = useDemo();
 
   const [rows, setRows] = useState([]);
   const [fetchState, setFetchState] = useState({ loading: true, error: null });
 
   const load = useCallback(async () => {
+    // Demo mode: render immediately with mock data, no buffering.
+    if (demoMode) {
+      setRows(getDemoTransactions());
+      setFetchState({ loading: false, error: null });
+      return;
+    }
+
     if (!supabaseConfigured) {
       setFetchState({ loading: false, error: new Error("Supabase is not configured.") });
       setRows([]);
@@ -46,20 +56,21 @@ export function DashboardPage() {
       setRows([]);
       setFetchState({ loading: false, error: e });
     }
-  }, [session?.user?.id, session, supabaseConfigured]);
+  }, [demoMode, session?.user?.id, session, supabaseConfigured]);
 
   useEffect(() => {
-    if (!session?.user?.id) return;
+    // Demo mode should not require session to show content after ProtectedRoute.
     load();
-  }, [load, session?.user?.id]);
+  }, [load]);
 
   // Realtime subscription: refresh dashboard when transactions are inserted/updated.
-  // Uses shared helper already used by Transactions/Alerts pages.
+  // Demo mode bypasses realtime entirely.
   const subRef = useRef(null);
   useEffect(() => {
     let alive = true;
 
     async function sub() {
+      if (demoMode) return;
       if (!supabaseConfigured || !user?.id) return;
 
       try {
@@ -91,7 +102,7 @@ export function DashboardPage() {
       }
       subRef.current = null;
     };
-  }, [load, supabaseConfigured, user?.id]);
+  }, [demoMode, load, supabaseConfigured, user?.id]);
 
   const month = useMemo(() => monthPrefix(new Date()), []);
   const monthlySpend = useMemo(() => {
@@ -139,7 +150,7 @@ export function DashboardPage() {
     );
   }
 
-  const realtimeEnabled = !!(supabaseConfigured && user?.id);
+  const realtimeEnabled = !!(!demoMode && supabaseConfigured && user?.id);
 
   return (
     <>

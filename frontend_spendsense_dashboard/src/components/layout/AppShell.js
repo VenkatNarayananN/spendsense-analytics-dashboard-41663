@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { navItems } from "../../theme";
+import { DemoModeBanner } from "../DemoModeBanner";
 
 /**
  * PUBLIC_INTERFACE
@@ -28,6 +29,7 @@ export function AppShell({ children }) {
         <TopBar title={title} onOpenNav={() => setNavOpen(true)} />
         <div className="ss-body">
           <main className="ss-content" aria-label="Main content">
+            <DemoModeBanner />
             {children}
           </main>
 

@@ -5,6 +5,7 @@ import { Badge } from "../components/ui/Badge";
 import { theme } from "../theme";
 import { useAuth } from "../auth/AuthContext";
 import { runTransactionsSeedOnly } from "../lib/supabaseClient/seed";
+import { useDemo } from "../demo/DemoContext";
 
 /**
  * PUBLIC_INTERFACE
@@ -15,6 +16,7 @@ export function SettingsPage() {
   const [profile, setProfile] = useState({ name: "Avery Chen", email: "avery@example.com" });
 
   const { generateSampleData, supabaseConfigured, session } = useAuth();
+  const { demoMode, setDemoMode, seedsOk, setSeedsOk, envForcesDemo } = useDemo();
 
   const [seedState, setSeedState] = useState({ status: "idle", message: "", mode: "" });
 
@@ -30,6 +32,7 @@ export function SettingsPage() {
     try {
       const res = await generateSampleData({ countTransactions: 24, countAlerts: 6 });
       if (res?.ok) {
+        setSeedsOk(true);
         setSeedState({
           status: "success",
           message: res.message || "Sample data generated.",
@@ -56,6 +59,7 @@ export function SettingsPage() {
     try {
       const res = await runTransactionsSeedOnly({ countTransactions: 28 });
       if (res?.ok) {
+        setSeedsOk(true);
         setSeedState({
           status: "success",
           message: res.message || "Transactions seeded.",
@@ -153,6 +157,42 @@ export function SettingsPage() {
               <Button variant="primary">Update profile</Button>
               <Button variant="ghost">Reset</Button>
             </div>
+          </div>
+        </Card>
+
+        <Card title="Demo mode" subtitle="Control mock vs Supabase-backed data">
+          <div className="ss-setting">
+            <div className="ss-setting__left">
+              <div className="ss-setting__title">Enable demo mode</div>
+              <div className="ss-setting__desc">
+                When enabled, pages render instantly with mock/demo data and bypass Supabase fetches and realtime.
+              </div>
+            </div>
+            <label className="ss-switch" title={envForcesDemo ? "Forced by REACT_APP_DEMO_MODE=true" : ""}>
+              <input
+                type="checkbox"
+                checked={demoMode}
+                disabled={envForcesDemo}
+                onChange={(e) => setDemoMode(e.target.checked)}
+                aria-label="Toggle demo mode"
+              />
+              <span className="ss-switch__slider" />
+            </label>
+          </div>
+
+          <div style={{ marginTop: theme.spacing.md, display: "flex", gap: theme.spacing.sm, flexWrap: "wrap" }}>
+            {seedsOk ? <Badge tone="success">Seeds confirmed</Badge> : <Badge tone="warning">Seeds not confirmed</Badge>}
+            {envForcesDemo ? (
+              <Badge tone="info">REACT_APP_DEMO_MODE=true</Badge>
+            ) : supabaseConfigured ? (
+              <Badge tone="info">Supabase configured</Badge>
+            ) : (
+              <Badge tone="warning">Supabase not configured</Badge>
+            )}
+          </div>
+
+          <div className="ss-demo__hint" style={{ marginTop: theme.spacing.md }}>
+            Tip: once schema/seed succeeds, turn demo mode off to re-enable Supabase reads and realtime subscriptions.
           </div>
         </Card>
 

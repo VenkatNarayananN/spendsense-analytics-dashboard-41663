@@ -9,6 +9,8 @@ import { theme } from "../theme";
 import { useAuth } from "../auth/AuthContext";
 import { dismissAlert, listAlerts } from "../lib/supabaseClient/db";
 import { subscribeToTableChanges } from "../lib/supabaseClient/realtime";
+import { useDemo } from "../demo/DemoContext";
+import { getDemoAlerts } from "../demo/demoData";
 
 function toneForSeverity(sev) {
   if (sev === "High") return "danger";
@@ -37,6 +39,7 @@ function typeForAlert(a) {
  */
 export function AlertsPage() {
   const { session, user, supabaseConfigured } = useAuth();
+  const { demoMode } = useDemo();
 
   const [rows, setRows] = useState([]);
   const [fetchState, setFetchState] = useState({ loading: true, error: null });
@@ -53,6 +56,12 @@ export function AlertsPage() {
   }, []);
 
   const load = useCallback(async () => {
+    if (demoMode) {
+      setRows(getDemoAlerts());
+      setFetchState({ loading: false, error: null });
+      return;
+    }
+
     if (!supabaseConfigured) {
       setFetchState({
         loading: false,
@@ -72,19 +81,19 @@ export function AlertsPage() {
       setRows([]);
       setFetchState({ loading: false, error: e });
     }
-  }, [session?.user?.id, session, supabaseConfigured]);
+  }, [demoMode, session?.user?.id, session, supabaseConfigured]);
 
   useEffect(() => {
-    if (!session?.user?.id) return;
     load();
-  }, [load, session?.user?.id]);
+  }, [load]);
 
-  // Realtime subscription
+  // Realtime subscription (disabled in demo mode)
   const subRef = useRef(null);
   useEffect(() => {
     let alive = true;
 
     async function sub() {
+      if (demoMode) return;
       if (!supabaseConfigured || !user?.id) return;
       try {
         const s = await subscribeToTableChanges({
@@ -111,7 +120,7 @@ export function AlertsPage() {
       }
       subRef.current = null;
     };
-  }, [load, supabaseConfigured, user?.id]);
+  }, [demoMode, load, supabaseConfigured, user?.id]);
 
   const severities = useMemo(() => uniq(rows.map((a) => a.severity).filter(Boolean)), [rows]);
   const types = useMemo(() => uniq(rows.map((a) => typeForAlert(a))), [rows]);
@@ -143,6 +152,14 @@ export function AlertsPage() {
   const onDismiss = useCallback(
     async (id) => {
       setActionState({ workingId: id, error: null });
+
+      // Demo mode: local-only removal, no remote calls.
+      if (demoMode) {
+        setRows((prev) => prev.filter((a) => a.id !== id));
+        setActionState({ workingId: null, error: null });
+        return;
+      }
+
       try {
         await dismissAlert(id);
         setActionState({ workingId: null, error: null });
@@ -152,17 +169,17 @@ export function AlertsPage() {
         setActionState({ workingId: null, error: e });
       }
     },
-    [setRows]
+    [demoMode, setRows]
   );
 
   return (
     <div className="ss-page">
       <Card
         title="Alerts"
-        subtitle="Anomaly and policy notifications"
+        subtitle={demoMode ? "Demo mode: dismiss alerts locally (no sync)." : "Anomaly and policy notifications"}
         action={
           <div style={{ display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
-            <LiveBadge />
+            {demoMode ? <Badge tone="warning">Demo</Badge> : <LiveBadge />}
             <Button variant="ghost" size="sm" onClick={load} aria-label="Refresh alerts">
               Refresh
             </Button>
@@ -227,7 +244,7 @@ export function AlertsPage() {
         </div>
 
         <div style={{ marginTop: theme.spacing.lg }}>
-          {fetchState.loading ? (
+          {fetchState.loading && !demoMode ? (
             <div className="ss-skelStack">
               <CardSkeleton rows={2} />
               <CardSkeleton rows={2} />
