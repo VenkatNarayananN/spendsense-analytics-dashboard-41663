@@ -1,5 +1,4 @@
 import React from "react";
-import { theme } from "../../theme";
 
 /**
  * PUBLIC_INTERFACE
@@ -32,11 +31,12 @@ export function Table({ columns, rows, getRowKey }) {
         .ss-tableWrap{
           width:100%;
           overflow:auto;
-          border: 1px solid ${theme.colors.border};
-          border-radius:${theme.radii.xl}px;
-          background: rgba(255,255,255,0.86);
+          border: 1px solid var(--border-default);
+          border-radius: var(--radius-xl);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
           backdrop-filter: blur(10px);
-          box-shadow: ${theme.shadows.sm};
+          box-shadow: var(--shadow-sm);
+          transition: var(--theme-transitions);
         }
 
         .ss-table{
@@ -48,29 +48,31 @@ export function Table({ columns, rows, getRowKey }) {
 
         thead th{
           text-align:left;
-          font-size:${theme.typography.sizes.xs}px;
-          color:${theme.colors.textMuted};
-          padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          background: ${theme.gradients.header};
+          font-size: var(--text-xs);
+          color: var(--text-muted);
+          padding:16px 20px;
+          background: var(--grad-header);
           position: sticky;
           top: 0;
           z-index: 1;
-          border-bottom: 1px solid ${theme.colors.borderSubtle};
-          font-weight: ${theme.typography.weights.black};
+          border-bottom: 1px solid var(--border-subtle);
+          font-weight: var(--weight-black);
           letter-spacing: 0.25px;
+          transition: var(--theme-transitions);
         }
 
         tbody td{
-          padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          border-bottom: 1px solid ${theme.colors.borderSubtle};
-          color:${theme.colors.text};
-          font-size:${theme.typography.sizes.sm}px;
-          font-weight: ${theme.typography.weights.semibold};
-          background: rgba(255,255,255,0.82);
+          padding:16px 20px;
+          border-bottom: 1px solid var(--border-subtle);
+          color: var(--text-default);
+          font-size: var(--text-sm);
+          font-weight: var(--weight-semibold);
+          background: color-mix(in srgb, var(--bg-card) 82%, transparent);
+          transition: var(--theme-transitions);
         }
 
         tbody tr:hover td{
-          background: rgba(244,114,182,0.06);
+          background: color-mix(in srgb, var(--brand-primary) 6%, transparent);
         }
 
         tbody tr:last-child td{

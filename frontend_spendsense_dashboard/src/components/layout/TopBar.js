@@ -1,13 +1,12 @@
 import React from "react";
-import { theme } from "../../theme";
+import { useTheme } from "../../theme/ThemeProvider";
 import { Button } from "../ui/Button";
-import { useAuth } from "../../auth/AuthContext";
 
 /**
  * PUBLIC_INTERFACE
  */
 export function TopBar({ title, onOpenNav, rightSlot }) {
-  const { isAuthenticated, signOut } = useAuth();
+  const { mode, themeName, setThemeMode, toggleTheme } = useTheme();
 
   return (
     <header className="ss-topbar" aria-label="Top navigation">
@@ -33,24 +32,39 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
 
       <div className="ss-topbar__right">
         {rightSlot}
+
+        <div className="ss-topbar__theme" aria-label="Theme settings">
+          <button
+            type="button"
+            className="ss-topbar__themeBtn"
+            onClick={toggleTheme}
+            aria-label={`Toggle theme (currently ${themeName})`}
+            title="Toggle theme"
+          >
+            <span className="ss-topbar__themeIcon" aria-hidden="true">
+              {themeName === "dark" ? "🌙" : "☀"}
+            </span>
+          </button>
+
+          <select
+            className="ss-topbar__themeSelect"
+            aria-label="Theme mode"
+            value={mode}
+            onChange={(e) => setThemeMode(e.target.value)}
+          >
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
         <Button variant="danger" size="pill" aria-label="Alerts (mock)">
           3 Alerts
         </Button>
 
-        {isAuthenticated ? (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={signOut}
-            aria-label="Sign out (placeholder)"
-          >
-            Sign out
-          </Button>
-        ) : (
-          <Button variant="secondary" size="sm" aria-label="Profile placeholder">
-            Avery Chen
-          </Button>
-        )}
+        <Button variant="secondary" size="sm" aria-label="Profile placeholder">
+          Avery Chen
+        </Button>
       </div>
 
       <style>{`
@@ -59,15 +73,17 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           display:flex;
           align-items:center;
           justify-content:space-between;
-          gap:${theme.spacing.lg}px;
-          padding: 0 ${theme.spacing.xl}px;
+          gap:20px;
+          padding: 0 24px;
 
-          background: rgba(255,255,255,0.78);
+          background: color-mix(in srgb, var(--bg-card) 78%, transparent);
           backdrop-filter: blur(12px);
-          border-bottom: 1px solid ${theme.colors.border};
+          border-bottom: 1px solid var(--border-default);
           position: sticky;
           top: 0;
           z-index: 10;
+
+          transition: var(--theme-transitions);
         }
 
         /* subtle gradient hairline across top bar */
@@ -78,13 +94,13 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           right:0;
           top:0;
           height: 3px;
-          background: ${theme.gradients.header};
+          background: var(--grad-header);
         }
 
         .ss-topbar__left{
           display:flex;
           align-items:center;
-          gap:${theme.spacing.md}px;
+          gap:16px;
           min-width: 220px;
         }
 
@@ -92,40 +108,40 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
           display:none;
           width:36px;
           height:36px;
-          border-radius:${theme.radii.md}px;
-          border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.85);
+          border-radius: var(--radius-md);
+          border:1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
           cursor:pointer;
-          font-weight:${theme.typography.weights.black};
-          color:${theme.colors.textStrong};
-          transition: background 140ms ease, transform 140ms ease, border-color 140ms ease;
+          font-weight: var(--weight-black);
+          color: var(--text-strong);
+          transition: background 140ms ease, transform 140ms ease, border-color 140ms ease, color 140ms ease;
         }
 
         .ss-topbar__menuBtn:hover{
-          background:${theme.gradients.accentSoft};
+          background: var(--grad-accent-soft);
           transform: translateY(-1px);
-          border-color: rgba(244,114,182,0.18);
+          border-color: color-mix(in srgb, var(--brand-primary) 18%, transparent);
         }
 
         .ss-topbar__menuBtn:focus-visible{
-          outline: 3px solid ${theme.effects.focusRing};
+          outline: 3px solid var(--focus-ring);
           outline-offset: 2px;
         }
 
         .ss-topbar__crumb{
-          font-size:${theme.typography.sizes.xs}px;
-          color:${theme.colors.textMuted};
-          font-weight:${theme.typography.weights.bold};
-          line-height:${theme.typography.lineHeights.tight};
+          font-size: var(--text-xs);
+          color: var(--text-muted);
+          font-weight: var(--weight-bold);
+          line-height: var(--line-tight);
           letter-spacing: 0.2px;
         }
 
         .ss-topbar__title{
           margin:2px 0 0 0;
-          font-size:${theme.typography.sizes.lg}px;
-          color:${theme.colors.textStrong};
-          font-weight:${theme.typography.weights.black};
-          line-height:${theme.typography.lineHeights.tight};
+          font-size: var(--text-lg);
+          color: var(--text-strong);
+          font-weight: var(--weight-black);
+          line-height: var(--line-tight);
           letter-spacing: 0.1px;
         }
 
@@ -138,33 +154,94 @@ export function TopBar({ title, onOpenNav, rightSlot }) {
         .ss-topbar__search{
           width:min(520px, 100%);
           height: 34px;
-          border-radius:${theme.radii.lg}px;
-          border:1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.86);
+          border-radius: var(--radius-lg);
+          border:1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
           padding: 0 12px;
-          font-size:${theme.typography.sizes.sm}px;
+          font-size: var(--text-sm);
           outline:none;
-          color:${theme.colors.text};
-          font-weight:${theme.typography.weights.semibold};
-          transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease;
+          color: var(--text-default);
+          font-weight: var(--weight-semibold);
+          transition: box-shadow 140ms ease, border-color 140ms ease, background 140ms ease, color 140ms ease;
         }
 
         .ss-topbar__search::placeholder{
-          color:${theme.colors.textDisabled};
+          color: var(--text-disabled);
         }
 
         .ss-topbar__search:focus{
-          border-color: rgba(244,114,182,0.42);
-          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
-          background: rgba(255,255,255,0.98);
+          border-color: color-mix(in srgb, var(--brand-primary) 42%, transparent);
+          box-shadow: 0 0 0 4px var(--focus-soft);
+          background: color-mix(in srgb, var(--bg-card) 96%, transparent);
         }
 
         .ss-topbar__right{
           display:flex;
           align-items:center;
           justify-content:flex-end;
-          gap:${theme.spacing.sm}px;
+          gap:12px;
           min-width: 260px;
+        }
+
+        .ss-topbar__theme{
+          display:flex;
+          align-items:center;
+          gap:8px;
+          padding: 6px 8px;
+          border-radius: var(--radius-lg);
+          border: 1px solid var(--border-subtle);
+          background: color-mix(in srgb, var(--bg-card) 74%, transparent);
+          transition: var(--theme-transitions);
+        }
+
+        .ss-topbar__themeBtn{
+          width:32px;
+          height:32px;
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+          color: var(--text-strong);
+          cursor: pointer;
+          transition: var(--theme-transitions), transform 140ms ease;
+        }
+
+        .ss-topbar__themeBtn:hover{
+          transform: translateY(-1px);
+          background: var(--grad-accent-soft);
+          border-color: color-mix(in srgb, var(--brand-primary) 18%, transparent);
+        }
+
+        .ss-topbar__themeBtn:focus-visible{
+          outline: 3px solid var(--focus-ring);
+          outline-offset: 2px;
+        }
+
+        .ss-topbar__themeIcon{
+          display:inline-flex;
+          width:100%;
+          height:100%;
+          align-items:center;
+          justify-content:center;
+          font-size: 14px;
+          font-weight: var(--weight-black);
+        }
+
+        .ss-topbar__themeSelect{
+          height: 32px;
+          border-radius: var(--radius-md);
+          border: 1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 86%, transparent);
+          color: var(--text-default);
+          padding: 0 10px;
+          font-size: var(--text-xs);
+          font-weight: var(--weight-black);
+          outline: none;
+          transition: var(--theme-transitions);
+        }
+
+        .ss-topbar__themeSelect:focus-visible{
+          outline: 3px solid var(--focus-ring);
+          outline-offset: 2px;
         }
 
         @media (max-width: 1024px){

@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { navItems, theme } from "../../theme";
+import { navItems } from "../../theme";
 
 /**
  * PUBLIC_INTERFACE
@@ -46,24 +46,26 @@ export function Sidebar({ isOpen, onClose }) {
 
       <style>{`
         .ss-sidebar{
-          width:${theme.layout.sidebarWidth}px;
-          padding:${theme.spacing.xl}px ${theme.spacing.lg}px;
+          width:240px;
+          padding:24px 20px;
           display:flex;
           flex-direction:column;
-          gap:${theme.spacing.lg}px;
+          gap:20px;
 
-          background: rgba(255,255,255,0.82);
+          background: color-mix(in srgb, var(--bg-sidebar) 82%, transparent);
           backdrop-filter: blur(12px);
-          border-right: 1px solid ${theme.colors.border};
+          border-right: 1px solid var(--border-default);
+          transition: var(--theme-transitions);
         }
 
         .ss-sidebar__brand{
-          padding:${theme.spacing.md}px;
-          border-radius:${theme.radii.xl}px;
-          border: 1px solid ${theme.colors.borderSubtle};
-          background: ${theme.gradients.header};
+          padding:16px;
+          border-radius: var(--radius-xl);
+          border: 1px solid var(--border-subtle);
+          background: var(--grad-header);
           position: relative;
           overflow:hidden;
+          transition: var(--theme-transitions);
         }
 
         .ss-sidebar__brandGlow{
@@ -78,19 +80,19 @@ export function Sidebar({ isOpen, onClose }) {
 
         .ss-sidebar__name{
           position:relative;
-          font-size:${theme.typography.sizes.lg}px;
-          font-weight:${theme.typography.weights.black};
-          color:${theme.colors.textStrong};
-          line-height:${theme.typography.lineHeights.tight};
+          font-size: var(--text-lg);
+          font-weight: var(--weight-black);
+          color: var(--text-strong);
+          line-height: var(--line-tight);
           letter-spacing: 0.1px;
         }
 
         .ss-sidebar__tag{
           position:relative;
           margin-top:2px;
-          font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.semibold};
-          color:${theme.colors.textMuted};
+          font-size: var(--text-sm);
+          font-weight: var(--weight-semibold);
+          color: var(--text-muted);
         }
 
         .ss-sidebar__nav{
@@ -102,69 +104,70 @@ export function Sidebar({ isOpen, onClose }) {
         .ss-sidebar__link{
           height: 40px;
           padding: 8px 10px;
-          border-radius:${theme.radii.lg}px;
+          border-radius: var(--radius-lg);
 
           display:flex;
           align-items:center;
           gap:10px;
 
           text-decoration:none;
-          color:${theme.colors.text};
-          font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.bold};
+          color: var(--text-default);
+          font-size: var(--text-sm);
+          font-weight: var(--weight-bold);
 
           border: 1px solid transparent;
-          transition: background 140ms ease, border-color 140ms ease, transform 140ms ease, color 140ms ease, box-shadow 140ms ease;
+          transition: var(--theme-transitions), transform 140ms ease;
         }
 
         .ss-sidebar__icon{
           width:16px;
           height:16px;
           border-radius: 999px;
-          background: ${theme.colors.textMuted};
+          background: var(--text-muted);
           opacity:0.25;
           flex:0 0 auto;
         }
 
         .ss-sidebar__link:hover{
-          background: rgba(244,114,182,0.08);
+          background: color-mix(in srgb, var(--brand-primary) 8%, transparent);
           transform: translateY(-1px);
-          border-color: rgba(244,114,182,0.16);
+          border-color: color-mix(in srgb, var(--brand-primary) 16%, transparent);
         }
 
         .ss-sidebar__link.active{
-          background: ${theme.gradients.accentSoft};
-          border-color: rgba(244,114,182,0.22);
-          color:${theme.colors.textStrong};
-          box-shadow: ${theme.shadows.sm};
+          background: var(--grad-accent-soft);
+          border-color: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+          color: var(--text-strong);
+          box-shadow: var(--shadow-sm);
         }
 
         .ss-sidebar__link.active .ss-sidebar__icon{
-          background:${theme.colors.primary};
+          background: var(--brand-primary);
           opacity:1;
         }
 
         .ss-sidebar__footer{
           margin-top:auto;
-          padding:${theme.spacing.md}px;
-          border-radius:${theme.radii.xl}px;
-          border: 1px solid ${theme.colors.borderSubtle};
-          background: rgba(255,255,255,0.72);
-          box-shadow: ${theme.shadows.sm};
+          padding:16px;
+          border-radius: var(--radius-xl);
+          border: 1px solid var(--border-subtle);
+          background: var(--bg-muted);
+          box-shadow: var(--shadow-sm);
+          transition: var(--theme-transitions);
         }
 
         .ss-sidebar__metaTitle{
-          font-size:${theme.typography.sizes.sm}px;
-          font-weight:${theme.typography.weights.black};
-          color:${theme.colors.textStrong};
+          font-size: var(--text-sm);
+          font-weight: var(--weight-black);
+          color: var(--text-strong);
         }
 
         .ss-sidebar__metaSub{
           margin-top:2px;
-          font-size:${theme.typography.sizes.xs}px;
-          font-weight:${theme.typography.weights.semibold};
-          color:${theme.colors.textMuted};
-          line-height:${theme.typography.lineHeights.normal};
+          font-size: var(--text-xs);
+          font-weight: var(--weight-semibold);
+          color: var(--text-muted);
+          line-height: var(--line-normal);
         }
 
         /* Mobile/tablet drawer */
@@ -178,8 +181,8 @@ export function Sidebar({ isOpen, onClose }) {
             height: 100vh;
             z-index: 50;
             transform: translateX(-110%);
-            transition: transform 180ms ease;
-            box-shadow: ${theme.shadows.md};
+            transition: transform 180ms ease, var(--theme-transitions);
+            box-shadow: var(--shadow-md);
           }
           .ss-sidebar.open{ transform: translateX(0); }
 

@@ -1,59 +1,55 @@
 import React from "react";
-import { theme } from "../../theme";
 
 /**
  * PUBLIC_INTERFACE
  */
 export function Badge({ tone = "neutral", children, className = "" }) {
-  const tones = {
-    neutral: {
-      bg: "rgba(255,255,255,0.70)",
-      fg: theme.colors.text,
-      border: theme.colors.borderSubtle,
-    },
-    info: {
-      bg: theme.gradients.accentSoft,
-      fg: theme.colors.textStrong,
-      border: "rgba(244,114,182,0.22)",
-    },
-    warning: {
-      bg: "rgba(245,158,11,0.18)",
-      fg: theme.colors.textStrong,
-      border: "rgba(245,158,11,0.28)",
-    },
-    success: {
-      bg: "rgba(16,185,129,0.16)",
-      fg: theme.colors.textStrong,
-      border: "rgba(16,185,129,0.24)",
-    },
-    error: {
-      bg: "rgba(239,68,68,0.14)",
-      fg: theme.colors.textStrong,
-      border: "rgba(239,68,68,0.22)",
-    },
-  };
-
-  const t = tones[tone] || tones.neutral;
-
   return (
     <>
       <span className={`ss-badge ${className}`} data-tone={tone}>
         {children}
       </span>
+
       <style>{`
         .ss-badge{
           display:inline-flex;
           align-items:center;
           height:24px;
           padding: 0 10px;
-          border-radius:${theme.radii.pill}px;
-          border:1px solid ${t.border};
-          background:${t.bg};
-          color:${t.fg};
-          font-size:${theme.typography.sizes.xs}px;
-          font-weight:${theme.typography.weights.black};
-          line-height:${theme.typography.lineHeights.tight};
+          border-radius: var(--radius-pill);
+          font-size: var(--text-xs);
+          font-weight: var(--weight-black);
+          line-height: var(--line-tight);
           white-space:nowrap;
+
+          border: 1px solid var(--border-subtle);
+          background: var(--bg-muted);
+          color: var(--text-default);
+          transition: var(--theme-transitions);
+        }
+
+        .ss-badge[data-tone="info"]{
+          background: var(--grad-accent-soft);
+          color: var(--text-strong);
+          border-color: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+        }
+
+        .ss-badge[data-tone="warning"]{
+          background: color-mix(in srgb, var(--brand-secondary) 18%, transparent);
+          color: var(--text-strong);
+          border-color: color-mix(in srgb, var(--brand-secondary) 28%, transparent);
+        }
+
+        .ss-badge[data-tone="success"]{
+          background: color-mix(in srgb, var(--success) 16%, transparent);
+          color: var(--text-strong);
+          border-color: color-mix(in srgb, var(--success) 24%, transparent);
+        }
+
+        .ss-badge[data-tone="error"]{
+          background: color-mix(in srgb, var(--danger) 14%, transparent);
+          color: var(--text-strong);
+          border-color: color-mix(in srgb, var(--danger) 22%, transparent);
         }
       `}</style>
     </>

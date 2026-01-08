@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
-import { theme, navItems } from "../../theme";
+import { navItems } from "../../theme";
 
 /**
  * PUBLIC_INTERFACE
@@ -21,7 +21,7 @@ export function AppShell({ children }) {
   }, [location.pathname]);
 
   return (
-    <div className="ss-app" style={{ fontFamily: theme.typography.fontFamily }}>
+    <div className="ss-app" style={{ fontFamily: "var(--font-family)" }}>
       <Sidebar isOpen={navOpen} onClose={() => setNavOpen(false)} />
 
       <div className="ss-main">
@@ -42,9 +42,10 @@ export function AppShell({ children }) {
       <style>{`
         .ss-app{
           min-height:100vh;
-          background: ${theme.gradients.canvas};
-          color: ${theme.colors.text};
+          background: var(--grad-canvas);
+          color: var(--text-default);
           display:flex;
+          transition: var(--theme-transitions);
         }
 
         .ss-main{
@@ -57,9 +58,9 @@ export function AppShell({ children }) {
         .ss-body{
           flex:1;
           display:grid;
-          grid-template-columns: 1fr ${theme.layout.rightRailWidth}px;
-          gap:${theme.spacing.xl}px;
-          padding:${theme.spacing.xl}px;
+          grid-template-columns: 1fr 300px;
+          gap:24px;
+          padding:24px;
           align-items:start;
           min-width:0;
         }
@@ -68,7 +69,7 @@ export function AppShell({ children }) {
           min-width:0;
           display:flex;
           flex-direction:column;
-          gap:${theme.spacing.xl}px;
+          gap:24px;
         }
 
         .ss-rightRail{
@@ -79,7 +80,7 @@ export function AppShell({ children }) {
 
           display:flex;
           flex-direction:column;
-          gap:${theme.spacing.md}px;
+          gap:16px;
         }
 
         .ss-rightRail__hint{
@@ -88,7 +89,7 @@ export function AppShell({ children }) {
 
         @media (max-width: 1200px){
           .ss-body{
-            grid-template-columns: 1fr ${theme.layout.rightRailWidthNarrow}px;
+            grid-template-columns: 1fr 260px;
           }
         }
 

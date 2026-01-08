@@ -1,5 +1,4 @@
 import React from "react";
-import { theme } from "../../theme";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -37,10 +36,10 @@ export function Button({
   ...props
 }) {
   const sizes = {
-    sm: { h: 32, padX: 12, font: theme.typography.sizes.sm, radius: theme.radii.md },
-    md: { h: 36, padX: 16, font: theme.typography.sizes.md, radius: theme.radii.md },
-    lg: { h: 40, padX: 18, font: theme.typography.sizes.lg, radius: theme.radii.md },
-    pill: { h: 26, padX: 10, font: theme.typography.sizes.sm, radius: theme.radii.pill },
+    sm: { h: 32, padX: 12, font: "var(--text-sm)", radius: "var(--radius-md)" },
+    md: { h: 36, padX: 16, font: "var(--text-md)", radius: "var(--radius-md)" },
+    lg: { h: 40, padX: 18, font: "var(--text-lg)", radius: "var(--radius-md)" },
+    pill: { h: 26, padX: 10, font: "var(--text-sm)", radius: "var(--radius-pill)" },
   };
   const s = sizes[size] || sizes.md;
 
@@ -50,41 +49,41 @@ export function Button({
        * Use a rose→purple gradient for the main CTA.
        * Keep text white for contrast.
        */
-      bg: theme.gradients.accent,
+      bg: "var(--grad-accent)",
       color: "#FFFFFF",
       border: "transparent",
       hoverBg: "linear-gradient(135deg, rgba(244,114,182,0.92), rgba(168,85,247,0.92))",
       activeBg: "linear-gradient(135deg, rgba(244,114,182,0.82), rgba(168,85,247,0.82))",
-      shadow: `${theme.shadows.sm}, ${theme.shadows.glowPink}`,
-      focus: theme.effects.focusRing,
-      focusSoft: theme.effects.focusSoft,
+      shadow: "var(--shadow-sm), var(--glow-pink)",
+      focus: "var(--focus-ring)",
+      focusSoft: "var(--focus-soft)",
     },
     secondary: {
-      bg: "rgba(255,255,255,0.86)",
-      color: theme.colors.textStrong,
-      border: theme.colors.border,
-      hoverBg: "rgba(244,114,182,0.10)",
-      activeBg: "rgba(244,114,182,0.14)",
+      bg: "color-mix(in srgb, var(--bg-card) 86%, transparent)",
+      color: "var(--text-strong)",
+      border: "var(--border-default)",
+      hoverBg: "color-mix(in srgb, var(--brand-primary) 10%, transparent)",
+      activeBg: "color-mix(in srgb, var(--brand-primary) 14%, transparent)",
       shadow: "none",
-      focus: theme.effects.focusRing,
-      focusSoft: theme.effects.focusSoft,
+      focus: "var(--focus-ring)",
+      focusSoft: "var(--focus-soft)",
     },
     ghost: {
       bg: "transparent",
-      color: theme.colors.textStrong,
+      color: "var(--text-strong)",
       border: "transparent",
-      hoverBg: "rgba(17,24,39,0.04)",
-      activeBg: "rgba(17,24,39,0.06)",
+      hoverBg: "color-mix(in srgb, var(--text-strong) 4%, transparent)",
+      activeBg: "color-mix(in srgb, var(--text-strong) 6%, transparent)",
       shadow: "none",
-      focus: theme.effects.focusRing,
-      focusSoft: theme.effects.focusSoft,
+      focus: "var(--focus-ring)",
+      focusSoft: "var(--focus-soft)",
     },
     danger: {
-      bg: theme.colors.danger,
+      bg: "var(--danger)",
       color: "#FFFFFF",
       border: "transparent",
-      hoverBg: shade(theme.colors.danger, -14),
-      activeBg: shade(theme.colors.danger, -22),
+      hoverBg: shade("#EF4444", -14),
+      activeBg: shade("#EF4444", -22),
       shadow: "none",
       focus: "rgba(239,68,68,0.40)",
       focusSoft: "rgba(239,68,68,0.16)",
@@ -103,14 +102,14 @@ export function Button({
         .ss-btn{
           appearance:none;
           height:${s.h}px;
-          border-radius:${s.radius}px;
+          border-radius:${s.radius};
           border:1px solid ${v.border};
           background:${v.bg};
           color:${v.color};
           padding:0 ${s.padX}px;
-          font-size:${s.font}px;
-          font-weight:${theme.typography.weights.semibold};
-          line-height:${theme.typography.lineHeights.tight};
+          font-size:${s.font};
+          font-weight: var(--weight-semibold);
+          line-height: var(--line-tight);
           cursor:pointer;
           transition:
             transform 140ms ease,
@@ -118,7 +117,8 @@ export function Button({
             background 160ms ease,
             opacity 140ms ease,
             border-color 140ms ease,
-            filter 160ms ease;
+            filter 160ms ease,
+            color 160ms ease;
           box-shadow: ${v.shadow || "none"};
           position: relative;
           white-space:nowrap;

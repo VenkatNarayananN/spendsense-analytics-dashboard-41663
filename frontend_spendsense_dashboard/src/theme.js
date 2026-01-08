@@ -8,7 +8,10 @@
  * (theme.colors.*, theme.gradients.*, theme.shadows.*) instead of hard-coded values.
  */
 
-export const theme = {
+/**
+ * Light tokens (existing look).
+ */
+export const lightTheme = {
   colors: {
     // Brand (Ocean Professional)
     primary: "#F472B6", // pink / rose
@@ -54,14 +57,10 @@ export const theme = {
      */
     canvas:
       "radial-gradient(1200px 700px at 10% 0%, rgba(244,114,182,0.18), rgba(244,114,182,0) 55%), radial-gradient(900px 520px at 95% 8%, rgba(245,158,11,0.18), rgba(245,158,11,0) 55%), linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.72))",
-    header:
-      "linear-gradient(90deg, rgba(244,114,182,0.14), rgba(245,158,11,0.12))",
-    accent:
-      "linear-gradient(135deg, rgba(244,114,182,1), rgba(168,85,247,1))", // rose -> purple
-    accentSoft:
-      "linear-gradient(135deg, rgba(244,114,182,0.16), rgba(168,85,247,0.10))",
-    amberGlow:
-      "linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.06))",
+    header: "linear-gradient(90deg, rgba(244,114,182,0.14), rgba(245,158,11,0.12))",
+    accent: "linear-gradient(135deg, rgba(244,114,182,1), rgba(168,85,247,1))", // rose -> purple
+    accentSoft: "linear-gradient(135deg, rgba(244,114,182,0.16), rgba(168,85,247,0.10))",
+    amberGlow: "linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.06))",
   },
 
   typography: {
@@ -107,6 +106,80 @@ export const theme = {
     rightRailWidthNarrow: 260,
   },
 };
+
+/**
+ * Dark tokens (Ocean Professional counterpart).
+ * Design goals:
+ * - keep the rose/amber brand vibe, but reduce luminance and increase contrast
+ * - preserve gradients, but make them subtle and non-glare
+ * - maintain focus visibility
+ */
+export const darkTheme = {
+  ...lightTheme,
+
+  colors: {
+    ...lightTheme.colors,
+
+    // Canvas / surfaces (dark)
+    canvas: "#0B1220", // deep navy
+    sidebar: "rgba(17,24,39,0.80)",
+    card: "rgba(17,24,39,0.72)",
+    surface: "rgba(17,24,39,0.70)",
+    mutedSurface: "rgba(17,24,39,0.55)",
+
+    // Text (dark)
+    textStrong: "#F9FAFB",
+    text: "rgba(249,250,251,0.86)",
+    textMuted: "rgba(249,250,251,0.62)",
+    textDisabled: "rgba(249,250,251,0.40)",
+
+    // Borders / dividers (dark)
+    border: "rgba(249,250,251,0.12)",
+    borderSubtle: "rgba(249,250,251,0.08)",
+  },
+
+  gradients: {
+    ...lightTheme.gradients,
+
+    // Dark canvas: keep rose/amber aura but subdued.
+    canvas:
+      "radial-gradient(1200px 700px at 10% 0%, rgba(244,114,182,0.14), rgba(244,114,182,0) 55%), radial-gradient(900px 520px at 95% 8%, rgba(245,158,11,0.12), rgba(245,158,11,0) 55%), linear-gradient(135deg, rgba(11,18,32,0.92), rgba(17,24,39,0.82))",
+    header:
+      "linear-gradient(90deg, rgba(244,114,182,0.12), rgba(245,158,11,0.10))",
+    accent:
+      "linear-gradient(135deg, rgba(244,114,182,0.95), rgba(168,85,247,0.95))",
+    accentSoft:
+      "linear-gradient(135deg, rgba(244,114,182,0.16), rgba(168,85,247,0.12))",
+    amberGlow:
+      "linear-gradient(135deg, rgba(245,158,11,0.16), rgba(245,158,11,0.06))",
+  },
+
+  shadows: {
+    ...lightTheme.shadows,
+    sm: "0 1px 2px rgba(0,0,0,0.45)",
+    md: "0 14px 40px rgba(0,0,0,0.55)",
+    glowPink: "0 18px 60px rgba(244,114,182,0.12)",
+    glowAmber: "0 18px 60px rgba(245,158,11,0.10)",
+  },
+
+  effects: {
+    ...lightTheme.effects,
+    // Slightly stronger focus ring for dark surfaces
+    focusRing: "rgba(244,114,182,0.55)",
+    focusSoft: "rgba(244,114,182,0.22)",
+  },
+};
+
+// Back-compat: existing imports expect `theme` to exist.
+export const theme = lightTheme;
+
+/**
+ * PUBLIC_INTERFACE
+ */
+export function getThemeTokens(themeName = "light") {
+  /** Returns the token set for a theme name ("light" | "dark"). */
+  return themeName === "dark" ? darkTheme : lightTheme;
+}
 
 export const navItems = [
   { key: "dashboard", label: "Dashboard", path: "/" },
