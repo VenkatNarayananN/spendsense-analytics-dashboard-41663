@@ -1,5 +1,4 @@
 import React from "react";
-import { theme } from "../../theme";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -8,8 +7,9 @@ function clamp(n, min, max) {
 /**
  * PUBLIC_INTERFACE
  */
-export function Skeleton({ width = "100%", height = 14, radius = theme.radii.md, style }) {
+export function Skeleton({ width = "100%", height = 14, radius = "var(--radius-md)", style }) {
   const h = typeof height === "number" ? `${clamp(height, 8, 64)}px` : height;
+
   return (
     <>
       <div
@@ -24,18 +24,16 @@ export function Skeleton({ width = "100%", height = 14, radius = theme.radii.md,
       />
       <style>{`
         .ss-skel{
-          background: linear-gradient(
-            90deg,
-            rgba(15,23,42,0.06),
-            rgba(15,23,42,0.10),
-            rgba(15,23,42,0.06)
-          );
+          background: var(--grad-shimmer);
           background-size: 200% 100%;
           animation: ssShimmer 1200ms ease-in-out infinite;
         }
         @keyframes ssShimmer{
           0%{ background-position: 0% 0%; }
           100%{ background-position: -200% 0%; }
+        }
+        @media (prefers-reduced-motion: reduce){
+          .ss-skel{ animation: none; }
         }
       `}</style>
     </>
@@ -60,23 +58,25 @@ export function CardSkeleton({ rows = 3 }) {
 
       <style>{`
         .ss-cardSkel{
-          border: 1px solid ${theme.colors.border};
-          border-radius:${theme.radii.lg}px;
-          background: rgba(255,255,255,0.65);
-          padding:${theme.spacing.xl}px;
-          box-shadow: ${theme.colors.shadowSm};
+          border: 1px solid var(--border-default);
+          border-radius: var(--radius-lg);
+          background: color-mix(in srgb, var(--bg-card) 70%, transparent);
+          padding: var(--space-6);
+          box-shadow: var(--shadow-sm);
+          backdrop-filter: blur(10px);
+          transition: var(--theme-transitions);
         }
         .ss-cardSkel__head{
           display:flex;
           align-items:center;
           justify-content:space-between;
-          gap:${theme.spacing.md}px;
-          margin-bottom:${theme.spacing.lg}px;
+          gap: var(--space-4);
+          margin-bottom: var(--space-5);
         }
         .ss-cardSkel__body{
           display:flex;
           flex-direction:column;
-          gap:${theme.spacing.sm}px;
+          gap: var(--space-3);
         }
       `}</style>
     </div>
@@ -112,18 +112,21 @@ export function TableSkeleton({ columns = 6, rows = 6 }) {
       <style>{`
         .ss-tableSkel{
           width:100%;
-          border: 1px solid ${theme.colors.border};
-          border-radius:${theme.radii.lg}px;
-          background:${theme.colors.surface};
+          border: 1px solid var(--border-default);
+          border-radius: var(--radius-lg);
+          background: color-mix(in srgb, var(--bg-card) 76%, transparent);
           overflow:hidden;
+          box-shadow: var(--shadow-sm);
+          backdrop-filter: blur(10px);
+          transition: var(--theme-transitions);
         }
         .ss-tableSkel__head{
           display:grid;
           grid-template-columns: repeat(${columns}, minmax(0, 1fr));
-          gap:${theme.spacing.md}px;
-          padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          background: rgba(99,102,241,0.08);
-          border-bottom: 1px solid ${theme.colors.border};
+          gap: var(--space-4);
+          padding: var(--space-4) var(--space-5);
+          background: var(--grad-header);
+          border-bottom: 1px solid var(--border-subtle);
         }
         .ss-tableSkel__rows{
           display:flex;
@@ -132,9 +135,9 @@ export function TableSkeleton({ columns = 6, rows = 6 }) {
         .ss-tableSkel__row{
           display:grid;
           grid-template-columns: repeat(${columns}, minmax(0, 1fr));
-          gap:${theme.spacing.md}px;
-          padding:${theme.spacing.md}px ${theme.spacing.lg}px;
-          border-bottom: 1px solid ${theme.colors.border};
+          gap: var(--space-4);
+          padding: var(--space-4) var(--space-5);
+          border-bottom: 1px solid var(--border-subtle);
         }
         .ss-tableSkel__row:last-child{ border-bottom:none; }
       `}</style>
@@ -150,7 +153,7 @@ export function ChartSkeleton({ height = 220 }) {
     <div className="ss-chartSkel" role="status" aria-live="polite" aria-label="Loading chart">
       <div className="ss-chartSkel__inner" style={{ height }}>
         <div className="ss-chartSkel__grid">
-          <Skeleton height="100%" width="100%" radius={theme.radii.lg} />
+          <Skeleton height="100%" width="100%" radius="var(--radius-lg)" />
         </div>
         <div className="ss-chartSkel__meta">
           <Skeleton width="44%" height={12} />
@@ -161,17 +164,19 @@ export function ChartSkeleton({ height = 220 }) {
       <style>{`
         .ss-chartSkel{
           width:100%;
-          border-radius:${theme.radii.lg}px;
+          border-radius: var(--radius-lg);
           overflow:hidden;
-          border: 1px solid ${theme.colors.border};
-          background: rgba(255,255,255,0.65);
-          box-shadow: ${theme.colors.shadowSm};
+          border: 1px solid var(--border-default);
+          background: color-mix(in srgb, var(--bg-card) 70%, transparent);
+          box-shadow: var(--shadow-sm);
+          backdrop-filter: blur(10px);
+          transition: var(--theme-transitions);
         }
         .ss-chartSkel__inner{
-          padding:${theme.spacing.lg}px;
+          padding: var(--space-5);
           display:flex;
           flex-direction:column;
-          gap:${theme.spacing.md}px;
+          gap: var(--space-4);
         }
         .ss-chartSkel__grid{
           flex:1;
@@ -179,7 +184,7 @@ export function ChartSkeleton({ height = 220 }) {
         .ss-chartSkel__meta{
           display:flex;
           justify-content:space-between;
-          gap:${theme.spacing.md}px;
+          gap: var(--space-4);
         }
       `}</style>
     </div>

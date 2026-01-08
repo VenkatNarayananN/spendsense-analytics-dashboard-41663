@@ -58,8 +58,8 @@ export function ChartPlaceholderFrame({
         {/* Background */}
         <defs>
           <linearGradient id={`${uid}-bg`} x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="rgba(244,114,182,0.16)" />
-            <stop offset="100%" stopColor="rgba(245,158,11,0.10)" />
+            <stop offset="0%" stopColor="var(--chart-ph-stop-1)" />
+            <stop offset="100%" stopColor="var(--chart-ph-stop-2)" />
           </linearGradient>
 
           <linearGradient id={`${uid}-stroke`} x1="0" y1="0" x2="1" y2="0">

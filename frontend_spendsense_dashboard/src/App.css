@@ -23,7 +23,22 @@
     linear-gradient(135deg, rgba(255,255,255,0.85), rgba(255,255,255,0.72));
   --grad-header: linear-gradient(90deg, rgba(244,114,182,0.14), rgba(245,158,11,0.12));
   --grad-accent: linear-gradient(135deg, rgba(244,114,182,1), rgba(168,85,247,1));
+  --grad-accent-hover: linear-gradient(135deg, rgba(244,114,182,0.92), rgba(168,85,247,0.92));
+  --grad-accent-active: linear-gradient(135deg, rgba(244,114,182,0.82), rgba(168,85,247,0.82));
   --grad-accent-soft: linear-gradient(135deg, rgba(244,114,182,0.16), rgba(168,85,247,0.10));
+  --grad-stripe-subtle: linear-gradient(180deg, rgba(244,114,182,0.08), rgba(245,158,11,0.06));
+
+  /* Placeholder / shimmer */
+  --grad-shimmer: linear-gradient(
+    90deg,
+    rgba(15,23,42,0.06),
+    rgba(15,23,42,0.10),
+    rgba(15,23,42,0.06)
+  );
+
+  /* Chart placeholder svg soft gradient stops */
+  --chart-ph-stop-1: rgba(244,114,182,0.16);
+  --chart-ph-stop-2: rgba(245,158,11,0.10);
 
   /* Text */
   --text-strong: #111827;
@@ -109,7 +124,22 @@ html[data-theme="dark"]{
     linear-gradient(135deg, rgba(11,18,32,0.92), rgba(17,24,39,0.82));
   --grad-header: linear-gradient(90deg, rgba(244,114,182,0.12), rgba(245,158,11,0.10));
   --grad-accent: linear-gradient(135deg, rgba(244,114,182,0.95), rgba(168,85,247,0.95));
+  --grad-accent-hover: linear-gradient(135deg, rgba(244,114,182,0.90), rgba(168,85,247,0.90));
+  --grad-accent-active: linear-gradient(135deg, rgba(244,114,182,0.82), rgba(168,85,247,0.82));
   --grad-accent-soft: linear-gradient(135deg, rgba(244,114,182,0.16), rgba(168,85,247,0.12));
+  --grad-stripe-subtle: linear-gradient(180deg, rgba(244,114,182,0.10), rgba(245,158,11,0.08));
+
+  /* Placeholder / shimmer (slightly brighter for dark) */
+  --grad-shimmer: linear-gradient(
+    90deg,
+    rgba(249,250,251,0.06),
+    rgba(249,250,251,0.10),
+    rgba(249,250,251,0.06)
+  );
+
+  /* Chart placeholder svg soft gradient stops */
+  --chart-ph-stop-1: rgba(244,114,182,0.18);
+  --chart-ph-stop-2: rgba(245,158,11,0.12);
 
   --text-strong: #F9FAFB;
   --text-default: rgba(249,250,251,0.86);

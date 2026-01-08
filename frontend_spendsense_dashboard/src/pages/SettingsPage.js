@@ -216,14 +216,14 @@ export function SettingsPage() {
           transition: 160ms ease;
         }
         .ss-switch input:checked + .ss-switch__slider{
-          background: ${theme.gradients.accentSoft};
-          border-color: rgba(244,114,182,0.30);
+          background: var(--grad-accent-soft);
+          border-color: color-mix(in srgb, var(--brand-primary) 30%, transparent);
         }
         .ss-switch input:checked + .ss-switch__slider:before{
           transform: translate(18px, -50%);
         }
         .ss-switch input:focus-visible + .ss-switch__slider{
-          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
+          box-shadow: 0 0 0 4px var(--focus-soft);
         }
 
         .ss-form{ display:flex; flex-direction:column; gap:${theme.spacing.md}px; }
@@ -253,8 +253,8 @@ export function SettingsPage() {
           gap:${theme.spacing.md}px;
           padding:${theme.spacing.lg}px;
           border-radius:${theme.radii.xl}px;
-          border: 1px dashed rgba(244,114,182,0.45);
-          background: linear-gradient(180deg, rgba(244,114,182,0.08), rgba(245,158,11,0.06));
+          border: 1px dashed color-mix(in srgb, var(--brand-primary) 45%, transparent);
+          background: var(--grad-stripe-subtle);
           box-shadow: ${theme.shadows.sm};
         }
         .ss-demo__meta{ display:flex; flex-direction:column; gap:${theme.spacing.sm}px; }

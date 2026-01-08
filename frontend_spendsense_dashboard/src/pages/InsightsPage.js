@@ -326,7 +326,7 @@ export function InsightsPage() {
           transition: background 120ms ease, color 120ms ease;
         }
 
-        .ss-seg__btn:hover{ background: rgba(244,114,182,0.12); }
+        .ss-seg__btn:hover{ background: color-mix(in srgb, var(--brand-primary) 12%, transparent); }
 
         .ss-seg__btn.active{
           background: rgba(255,255,255,0.72);
@@ -353,9 +353,9 @@ export function InsightsPage() {
         }
 
         .ss-select:focus{
-          border-color: rgba(244,114,182,0.42);
-          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
-          background: rgba(255,255,255,0.98);
+          border-color: color-mix(in srgb, var(--brand-primary) 42%, transparent);
+          box-shadow: 0 0 0 4px var(--focus-soft);
+          background: color-mix(in srgb, var(--bg-card) 96%, transparent);
         }
 
         .ss-grid{ display:grid; grid-template-columns: 1.1fr 0.9fr; gap:${theme.spacing.xl}px; }

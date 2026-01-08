@@ -407,9 +407,9 @@ export function TransactionsPage() {
         .ss-select{ font-weight:${theme.typography.weights.black}; }
 
         .ss-input:focus, .ss-select:focus{
-          border-color: rgba(244,114,182,0.42);
-          box-shadow: 0 0 0 4px rgba(244,114,182,0.18);
-          background: rgba(255,255,255,0.98);
+          border-color: color-mix(in srgb, var(--brand-primary) 42%, transparent);
+          box-shadow: 0 0 0 4px var(--focus-soft);
+          background: color-mix(in srgb, var(--bg-card) 96%, transparent);
         }
 
         .ss-input--dense, .ss-select--dense{
@@ -449,8 +449,8 @@ export function TransactionsPage() {
         }
 
         .ss-chip:hover{
-          background: ${theme.gradients.accentSoft};
-          border-color: rgba(244,114,182,0.20);
+          background: var(--grad-accent-soft);
+          border-color: color-mix(in srgb, var(--brand-primary) 20%, transparent);
           transform: translateY(-1px);
         }
 
