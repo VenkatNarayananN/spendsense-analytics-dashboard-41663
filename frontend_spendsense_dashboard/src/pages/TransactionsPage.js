@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Badge } from "../components/ui/Badge";
+import { LiveBadge } from "../components/ui/LiveBadge";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import { TableSkeleton } from "../components/ui/Skeleton";
@@ -202,7 +203,7 @@ export function TransactionsPage() {
         subtitle="Filter, search, and export your activity."
         action={
           <div style={{ display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
-            <Badge tone="success">Live</Badge>
+            <LiveBadge />
             <Button variant="primary" size="sm">
               Export
             </Button>

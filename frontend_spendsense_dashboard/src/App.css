@@ -46,6 +46,14 @@
   --glow-pink: 0 18px 50px rgba(244,114,182,0.18);
   --glow-amber: 0 18px 50px rgba(245,158,11,0.16);
 
+  /* Live badge (theme adaptive) */
+  --live-badge-bg: color-mix(in srgb, var(--success) 18%, var(--bg-card));
+  --live-badge-text: var(--text-strong);
+  --live-badge-border: color-mix(in srgb, var(--success) 30%, transparent);
+  --live-badge-dot: var(--success);
+  --live-badge-dotRing: color-mix(in srgb, var(--success) 22%, transparent);
+  --live-badge-dotGlow: color-mix(in srgb, var(--success) 35%, transparent);
+
   /* Focus */
   --focus-ring: rgba(244,114,182,0.45);
   --focus-soft: rgba(244,114,182,0.18);
@@ -118,6 +126,14 @@ html[data-theme="dark"]{
 
   --focus-ring: rgba(244,114,182,0.55);
   --focus-soft: rgba(244,114,182,0.22);
+
+  /* Live badge (dark theme overrides for contrast) */
+  --live-badge-bg: color-mix(in srgb, var(--success) 22%, rgba(17,24,39,1));
+  --live-badge-text: var(--text-strong);
+  --live-badge-border: color-mix(in srgb, var(--success) 38%, transparent);
+  --live-badge-dot: color-mix(in srgb, var(--success) 92%, white);
+  --live-badge-dotRing: color-mix(in srgb, var(--success) 22%, transparent);
+  --live-badge-dotGlow: color-mix(in srgb, var(--success) 28%, transparent);
 }
 
 /* ---- Base ---- */
