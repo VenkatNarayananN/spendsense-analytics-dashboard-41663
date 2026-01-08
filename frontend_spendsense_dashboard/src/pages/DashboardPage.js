@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
-import { AreaChartPlaceholder } from "../components/charts";
+import { AreaChartPro } from "../components/charts";
 import { theme } from "../theme";
 import { useAuth } from "../auth/AuthContext";
 import { listTransactions } from "../lib/supabaseClient/db";
@@ -130,21 +130,45 @@ export function DashboardPage() {
           </div>
 
           <div className="ss-grid ss-grid--two">
-            <Card title="Spending Pulse" subtitle="Weekly pattern (placeholder chart)">
-              <AreaChartPlaceholder
-                title="Spending Pulse (placeholder)"
+            <Card title="Spending Pulse" subtitle="Weekly pattern">
+              <AreaChartPro
+                ariaLabel="Spending pulse area chart"
+                title="Spend"
                 height={220}
-                data={[
-                  { label: "Mon", value: 34 },
-                  { label: "Tue", value: 58 },
-                  { label: "Wed", value: 42 },
-                  { label: "Thu", value: 76 },
-                  { label: "Fri", value: 62 },
-                  { label: "Sat", value: 88 },
-                  { label: "Sun", value: 54 },
-                ]}
+                isMock={rows.length === 0}
+                data={
+                  rows.length
+                    ? (() => {
+                        // Build a simple last-7-days series from loaded transactions.
+                        const days = Array.from({ length: 7 }).map((_, i) => {
+                          const d = new Date();
+                          d.setDate(d.getDate() - (6 - i));
+                          const iso = d.toISOString().slice(0, 10);
+                          return { iso, label: d.toLocaleDateString(undefined, { weekday: "short" }) };
+                        });
+
+                        const totals = new Map(days.map((d) => [d.iso, 0]));
+                        for (const t of rows) {
+                          const key = String(t.date || "").slice(0, 10);
+                          if (!totals.has(key)) continue;
+                          totals.set(key, (totals.get(key) || 0) + Number(t.amount || 0));
+                        }
+
+                        return days.map((d) => ({ label: d.label, value: Math.round(totals.get(d.iso) || 0) }));
+                      })()
+                    : [
+                        { label: "Mon", value: 34 },
+                        { label: "Tue", value: 58 },
+                        { label: "Wed", value: 42 },
+                        { label: "Thu", value: 76 },
+                        { label: "Fri", value: 62 },
+                        { label: "Sat", value: 88 },
+                        { label: "Sun", value: 54 },
+                      ]
+                }
+                valueFormatter={(v) => formatMoney(v)}
               />
-              <div className="ss-footnote">Chart uses placeholder series; totals reflect live Supabase transactions.</div>
+              <div className="ss-footnote">Weekly rollup from your recent transactions.</div>
             </Card>
 
             <Card title="Recent Activity" subtitle="Latest transactions">

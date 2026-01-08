@@ -3,7 +3,7 @@ import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ChartSkeleton } from "../components/ui/Skeleton";
-import { BarChartPlaceholder, DonutChartPlaceholder } from "../components/charts";
+import { BarChartPro, DonutChartPro } from "../components/charts";
 import { theme } from "../theme";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../auth/AuthContext";
@@ -210,10 +210,13 @@ export function InsightsPage() {
                 onPrimaryAction={reset}
               />
             ) : (
-              <BarChartPlaceholder
-                title="Category Spend (placeholder)"
+              <BarChartPro
+                ariaLabel="Category performance bar chart"
+                title="Category spend"
                 height={220}
                 data={topCategories.map((c) => ({ label: c.label, value: c.value }))}
+                isMock={rows.length === 0}
+                valueFormatter={(v) => `$${Number(v || 0).toLocaleString()}`}
               />
             )}
           </div>
@@ -248,10 +251,13 @@ export function InsightsPage() {
             ) : fetchState.error ? (
               <ChartSkeleton height={220} />
             ) : (
-              <DonutChartPlaceholder
-                title="Allocation (placeholder)"
+              <DonutChartPro
+                ariaLabel="Category allocation donut chart"
+                title="Allocation"
                 height={220}
                 data={topCategories.slice(0, 4).map((c) => ({ label: c.label, value: c.value }))}
+                isMock={rows.length === 0}
+                valueFormatter={(v) => `$${Number(v || 0).toLocaleString()}`}
               />
             )}
           </div>

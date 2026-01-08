@@ -40,6 +40,22 @@
   --chart-ph-stop-1: rgba(244,114,182,0.16);
   --chart-ph-stop-2: rgba(245,158,11,0.10);
 
+  /* ---- Charts (Recharts) - theme aware tokens ---- */
+  --chart-grid: rgba(17,24,39,0.08);
+  --chart-axis: rgba(17,24,39,0.48);
+  --chart-tooltip-bg: color-mix(in srgb, var(--bg-card) 92%, transparent);
+  --chart-tooltip-border: color-mix(in srgb, var(--border-default) 90%, transparent);
+
+  /* Series colors */
+  --chart-series-1: var(--brand-primary);
+  --chart-series-2: var(--brand-secondary);
+  --chart-series-3: var(--success);
+  --chart-series-4: var(--danger);
+
+  /* Subtle fills */
+  --chart-fill-1: color-mix(in srgb, var(--brand-primary) 22%, transparent);
+  --chart-fill-2: color-mix(in srgb, var(--brand-secondary) 18%, transparent);
+
   /* Text */
   --text-strong: #111827;
   --text-default: #374151;
@@ -140,6 +156,15 @@ html[data-theme="dark"]{
   /* Chart placeholder svg soft gradient stops */
   --chart-ph-stop-1: rgba(244,114,182,0.18);
   --chart-ph-stop-2: rgba(245,158,11,0.12);
+
+  /* ---- Charts (Recharts) - dark overrides ---- */
+  --chart-grid: rgba(249,250,251,0.10);
+  --chart-axis: rgba(249,250,251,0.62);
+  --chart-tooltip-bg: color-mix(in srgb, rgba(17,24,39,1) 88%, transparent);
+  --chart-tooltip-border: rgba(249,250,251,0.12);
+
+  --chart-fill-1: color-mix(in srgb, var(--brand-primary) 24%, transparent);
+  --chart-fill-2: color-mix(in srgb, var(--brand-secondary) 22%, transparent);
 
   --text-strong: #F9FAFB;
   --text-default: rgba(249,250,251,0.86);
