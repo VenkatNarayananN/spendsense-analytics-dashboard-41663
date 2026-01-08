@@ -1,13 +1,14 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Table } from "../components/ui/Table";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import { TableSkeleton } from "../components/ui/Skeleton";
-import { transactions as allTx } from "../mockData";
 import { theme } from "../theme";
-import { useMockFetch } from "../hooks/useMockFetch";
+import { useAuth } from "../auth/AuthContext";
+import { listTransactions } from "../lib/supabaseClient/db";
+import { subscribeToTableChanges } from "../lib/supabaseClient/realtime";
 
 function formatMoney(v) {
   return new Intl.NumberFormat(undefined, { style: "currency", currency: "USD" }).format(v);
@@ -42,6 +43,12 @@ function inDateRange(iso, from, to) {
  * PUBLIC_INTERFACE
  */
 export function TransactionsPage() {
+  const { session, user, supabaseConfigured } = useAuth();
+
+  // Data state
+  const [rows, setRows] = useState([]);
+  const [fetchState, setFetchState] = useState({ loading: true, error: null });
+
   // Filters
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("All");
@@ -61,8 +68,71 @@ export function TransactionsPage() {
     setAmountMax("");
   }, []);
 
-  const categories = useMemo(() => uniq(allTx.map((t) => t.category)), []);
-  const statuses = useMemo(() => uniq(allTx.map((t) => t.status)), []);
+  const load = useCallback(async () => {
+    if (!supabaseConfigured) {
+      setFetchState({
+        loading: false,
+        error: new Error("Supabase is not configured."),
+      });
+      setRows([]);
+      return;
+    }
+    if (!session?.user?.id) return;
+
+    setFetchState({ loading: true, error: null });
+    try {
+      const data = await listTransactions({ userId: session.user.id });
+      setRows(Array.isArray(data) ? data : []);
+      setFetchState({ loading: false, error: null });
+    } catch (e) {
+      setRows([]);
+      setFetchState({ loading: false, error: e });
+    }
+  }, [session?.user?.id, session, supabaseConfigured]);
+
+  // Fetch on mount/session changes
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    load();
+  }, [load, session?.user?.id]);
+
+  // Realtime subscription
+  const subRef = useRef(null);
+  useEffect(() => {
+    let alive = true;
+
+    async function sub() {
+      if (!supabaseConfigured || !user?.id) return;
+      try {
+        const s = await subscribeToTableChanges({
+          table: "transactions",
+          filter: `user_id=eq.${user.id}`,
+          onChange: () => {
+            // simplest reliable path: refetch on any change
+            if (alive) load();
+          },
+        });
+        subRef.current = s;
+      } catch (e) {
+        // do not fail the page if realtime is unavailable; data still loads via fetch
+      }
+    }
+
+    sub();
+
+    return () => {
+      alive = false;
+      try {
+        subRef.current?.unsubscribe?.();
+      } catch {
+        // ignore
+      }
+      subRef.current = null;
+    };
+  }, [load, supabaseConfigured, user?.id]);
+
+  const categories = useMemo(() => uniq(rows.map((t) => t.category).filter(Boolean)), [rows]);
+  const statuses = useMemo(() => uniq(rows.map((t) => t.status).filter(Boolean)), [rows]);
 
   const activeFilters = useMemo(() => {
     const chips = [];
@@ -86,13 +156,13 @@ export function TransactionsPage() {
     const min = amountMin === "" ? "" : Number(amountMin);
     const max = amountMax === "" ? "" : Number(amountMax);
 
-    return allTx.filter((t) => {
+    return rows.filter((t) => {
       const matchesQ =
         !q ||
-        t.merchant.toLowerCase().includes(q) ||
-        t.category.toLowerCase().includes(q) ||
-        t.method.toLowerCase().includes(q) ||
-        t.id.toLowerCase().includes(q);
+        String(t.merchant || "").toLowerCase().includes(q) ||
+        String(t.category || "").toLowerCase().includes(q) ||
+        String(t.method || "").toLowerCase().includes(q) ||
+        String(t.id || "").toLowerCase().includes(q);
 
       const matchesStatus = status === "All" ? true : t.status === status;
       const matchesCategory = category === "All" ? true : t.category === category;
@@ -101,14 +171,7 @@ export function TransactionsPage() {
 
       return matchesQ && matchesStatus && matchesCategory && matchesDate && matchesAmount;
     });
-  }, [amountMax, amountMin, category, dateFrom, dateTo, search, status]);
-
-  // Mock async layer (for Supabase readiness)
-  const fetchState = useMockFetch(
-    () => filtered,
-    [filtered.length, search, status, category, dateFrom, dateTo, amountMin, amountMax],
-    { delayMs: 550 }
-  );
+  }, [amountMax, amountMin, category, dateFrom, dateTo, rows, search, status]);
 
   const columns = [
     { key: "date", header: "Date", width: "120px" },
@@ -125,18 +188,26 @@ export function TransactionsPage() {
       key: "status",
       header: "Status",
       width: "140px",
-      render: (r) => (
-        <Badge tone={r.status === "Pending" ? "warning" : "success"}>{r.status}</Badge>
-      ),
+      render: (r) => <Badge tone={r.status === "Pending" ? "warning" : "success"}>{r.status}</Badge>,
     },
   ];
+
+  const showEmpty =
+    !fetchState.loading && !fetchState.error && Array.isArray(filtered) && filtered.length === 0;
 
   return (
     <div className="ss-page">
       <Card
         title="Transactions"
-        subtitle="Filter, search, and export your activity. (Mock data)"
-        action={<Button variant="primary" size="sm">Export</Button>}
+        subtitle="Filter, search, and export your activity."
+        action={
+          <div style={{ display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
+            <Badge tone="success">Live</Badge>
+            <Button variant="primary" size="sm">
+              Export
+            </Button>
+          </div>
+        }
       >
         <div className="ss-controls" aria-label="Transaction filters">
           <input
@@ -229,7 +300,10 @@ export function TransactionsPage() {
               <Button variant="secondary" size="sm" onClick={resetFilters} aria-label="Reset filters">
                 Reset
               </Button>
-              <Badge tone="info">{(fetchState.data || []).length} results</Badge>
+              <Button variant="ghost" size="sm" onClick={load} aria-label="Refresh transactions">
+                Refresh
+              </Button>
+              <Badge tone="info">{filtered.length} results</Badge>
             </div>
           </div>
         </div>
@@ -245,7 +319,9 @@ export function TransactionsPage() {
                 aria-label={`Remove filter: ${c.label}`}
               >
                 <span className="ss-chip__label">{c.label}</span>
-                <span className="ss-chip__x" aria-hidden="true">×</span>
+                <span className="ss-chip__x" aria-hidden="true">
+                  ×
+                </span>
               </button>
             ))}
             <button className="ss-chip ss-chip--link" type="button" onClick={resetFilters}>
@@ -257,9 +333,15 @@ export function TransactionsPage() {
         <div style={{ marginTop: theme.spacing.lg }}>
           {fetchState.loading ? (
             <TableSkeleton columns={6} rows={7} />
-          ) : fetchState.data && fetchState.data.length > 0 ? (
-            <Table columns={columns} rows={fetchState.data} getRowKey={(r) => r.id} />
-          ) : (
+          ) : fetchState.error ? (
+            <EmptyState
+              icon="⚠"
+              title="Unable to load transactions"
+              description={fetchState.error?.message || "An unexpected error occurred while loading your transactions."}
+              primaryActionLabel="Retry"
+              onPrimaryAction={load}
+            />
+          ) : showEmpty ? (
             <EmptyState
               icon="⧉"
               title="No transactions match these filters"
@@ -269,6 +351,8 @@ export function TransactionsPage() {
               secondaryActionLabel="Clear search"
               onSecondaryAction={() => setSearch("")}
             />
+          ) : (
+            <Table columns={columns} rows={filtered} getRowKey={(r) => r.id} />
           )}
         </div>
       </Card>

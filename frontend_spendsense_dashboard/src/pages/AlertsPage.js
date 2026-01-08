@@ -1,15 +1,16 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Button } from "../components/ui/Button";
 import { EmptyState } from "../components/ui/EmptyState";
 import { CardSkeleton } from "../components/ui/Skeleton";
-import { alerts as allAlerts } from "../mockData";
 import { theme } from "../theme";
-import { useMockFetch } from "../hooks/useMockFetch";
+import { useAuth } from "../auth/AuthContext";
+import { dismissAlert, listAlerts } from "../lib/supabaseClient/db";
+import { subscribeToTableChanges } from "../lib/supabaseClient/realtime";
 
 function toneForSeverity(sev) {
-  if (sev === "High") return "error";
+  if (sev === "High") return "danger";
   if (sev === "Medium") return "warning";
   return "info";
 }
@@ -19,10 +20,10 @@ function uniq(arr) {
 }
 
 /**
- * Simple heuristic "type" for mock alerts.
+ * Simple heuristic "type" derived from alert content.
  */
 function typeForAlert(a) {
-  const s = `${a.title} ${a.detail}`.toLowerCase();
+  const s = `${a.title || ""} ${a.detail || ""}`.toLowerCase();
   if (s.includes("subscription") || s.includes("billed")) return "Subscription";
   if (s.includes("decline") || s.includes("declined")) return "Card";
   if (s.includes("travel") || s.includes("hotel")) return "Travel";
@@ -34,6 +35,12 @@ function typeForAlert(a) {
  * PUBLIC_INTERFACE
  */
 export function AlertsPage() {
+  const { session, user, supabaseConfigured } = useAuth();
+
+  const [rows, setRows] = useState([]);
+  const [fetchState, setFetchState] = useState({ loading: true, error: null });
+  const [actionState, setActionState] = useState({ workingId: null, error: null });
+
   const [search, setSearch] = useState("");
   const [severity, setSeverity] = useState("All");
   const [type, setType] = useState("All");
@@ -44,28 +51,85 @@ export function AlertsPage() {
     setType("All");
   }, []);
 
-  const severities = useMemo(() => uniq(allAlerts.map((a) => a.severity)), []);
-  const types = useMemo(() => uniq(allAlerts.map((a) => typeForAlert(a))), []);
+  const load = useCallback(async () => {
+    if (!supabaseConfigured) {
+      setFetchState({
+        loading: false,
+        error: new Error("Supabase is not configured."),
+      });
+      setRows([]);
+      return;
+    }
+    if (!session?.user?.id) return;
+
+    setFetchState({ loading: true, error: null });
+    try {
+      const data = await listAlerts({ userId: session.user.id });
+      setRows(Array.isArray(data) ? data : []);
+      setFetchState({ loading: false, error: null });
+    } catch (e) {
+      setRows([]);
+      setFetchState({ loading: false, error: e });
+    }
+  }, [session?.user?.id, session, supabaseConfigured]);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    load();
+  }, [load, session?.user?.id]);
+
+  // Realtime subscription
+  const subRef = useRef(null);
+  useEffect(() => {
+    let alive = true;
+
+    async function sub() {
+      if (!supabaseConfigured || !user?.id) return;
+      try {
+        const s = await subscribeToTableChanges({
+          table: "alerts",
+          filter: `user_id=eq.${user.id}`,
+          onChange: () => {
+            if (alive) load();
+          },
+        });
+        subRef.current = s;
+      } catch {
+        // ignore; non-fatal
+      }
+    }
+
+    sub();
+
+    return () => {
+      alive = false;
+      try {
+        subRef.current?.unsubscribe?.();
+      } catch {
+        // ignore
+      }
+      subRef.current = null;
+    };
+  }, [load, supabaseConfigured, user?.id]);
+
+  const severities = useMemo(() => uniq(rows.map((a) => a.severity).filter(Boolean)), [rows]);
+  const types = useMemo(() => uniq(rows.map((a) => typeForAlert(a))), [rows]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return allAlerts.filter((a) => {
+    return rows.filter((a) => {
       const matchesQ =
         !q ||
-        a.title.toLowerCase().includes(q) ||
-        a.detail.toLowerCase().includes(q) ||
-        a.id.toLowerCase().includes(q);
+        String(a.title || "").toLowerCase().includes(q) ||
+        String(a.detail || "").toLowerCase().includes(q) ||
+        String(a.id || "").toLowerCase().includes(q);
 
       const matchesSeverity = severity === "All" ? true : a.severity === severity;
       const matchesType = type === "All" ? true : typeForAlert(a) === type;
 
       return matchesQ && matchesSeverity && matchesType;
     });
-  }, [search, severity, type]);
-
-  const fetchState = useMockFetch(() => filtered, [filtered.length, search, severity, type], {
-    delayMs: 450,
-  });
+  }, [rows, search, severity, type]);
 
   const activeCount = useMemo(() => {
     let n = 0;
@@ -75,15 +139,33 @@ export function AlertsPage() {
     return n;
   }, [search, severity, type]);
 
+  const onDismiss = useCallback(
+    async (id) => {
+      setActionState({ workingId: id, error: null });
+      try {
+        await dismissAlert(id);
+        setActionState({ workingId: null, error: null });
+        // optimistic removal
+        setRows((prev) => prev.filter((a) => a.id !== id));
+      } catch (e) {
+        setActionState({ workingId: null, error: e });
+      }
+    },
+    [setRows]
+  );
+
   return (
     <div className="ss-page">
       <Card
         title="Alerts"
-        subtitle="Anomaly and policy notifications (mock)"
+        subtitle="Anomaly and policy notifications"
         action={
-          <Button variant="ghost" size="sm">
-            Mark all as read
-          </Button>
+          <div style={{ display: "flex", gap: theme.spacing.sm, alignItems: "center" }}>
+            <Badge tone="success">Live</Badge>
+            <Button variant="ghost" size="sm" onClick={load} aria-label="Refresh alerts">
+              Refresh
+            </Button>
+          </div>
         }
       >
         <div className="ss-controls" aria-label="Alert filters">
@@ -127,7 +209,7 @@ export function AlertsPage() {
             </label>
 
             <div className="ss-controls__meta">
-              <Badge tone="info">{(fetchState.data || []).length} results</Badge>
+              <Badge tone="info">{filtered.length} results</Badge>
               {activeCount > 0 && (
                 <Button variant="secondary" size="sm" onClick={reset} aria-label="Clear filters">
                   Clear filters
@@ -135,6 +217,12 @@ export function AlertsPage() {
               )}
             </div>
           </div>
+
+          {actionState.error && (
+            <div aria-live="polite" style={{ marginTop: theme.spacing.sm }}>
+              <Badge tone="danger">{actionState.error?.message || "Unable to dismiss alert."}</Badge>
+            </div>
+          )}
         </div>
 
         <div style={{ marginTop: theme.spacing.lg }}>
@@ -144,9 +232,17 @@ export function AlertsPage() {
               <CardSkeleton rows={2} />
               <CardSkeleton rows={2} />
             </div>
-          ) : fetchState.data && fetchState.data.length > 0 ? (
+          ) : fetchState.error ? (
+            <EmptyState
+              icon="⚠"
+              title="Unable to load alerts"
+              description={fetchState.error?.message || "An unexpected error occurred while loading your alerts."}
+              primaryActionLabel="Retry"
+              onPrimaryAction={load}
+            />
+          ) : filtered.length > 0 ? (
             <div className="ss-alerts">
-              {fetchState.data.map((a) => (
+              {filtered.map((a) => (
                 <div key={a.id} className="ss-alert">
                   <div className="ss-alert__left">
                     <div className="ss-alert__title">{a.title}</div>
@@ -156,8 +252,18 @@ export function AlertsPage() {
                       <span className="ss-alert__id">{a.id}</span>
                     </div>
                   </div>
+
                   <div className="ss-alert__right">
                     <Badge tone={toneForSeverity(a.severity)}>{a.severity}</Badge>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => onDismiss(a.id)}
+                      disabled={actionState.workingId === a.id}
+                      aria-label={`Dismiss alert ${a.id}`}
+                    >
+                      {actionState.workingId === a.id ? "Dismissing…" : "Dismiss"}
+                    </Button>
                   </div>
                 </div>
               ))}
@@ -170,10 +276,7 @@ export function AlertsPage() {
               primaryActionLabel="Clear filters"
               onPrimaryAction={reset}
               secondaryActionLabel="Refresh"
-              onSecondaryAction={() => {
-                // placeholder for future refresh action
-                reset();
-              }}
+              onSecondaryAction={load}
             />
           )}
         </div>
@@ -271,7 +374,7 @@ export function AlertsPage() {
           color: rgba(55,65,81,0.55);
           font-family:${theme.typography.monoFamily};
         }
-        .ss-alert__right{ display:flex; align-items:center; }
+        .ss-alert__right{ display:flex; align-items:center; gap:${theme.spacing.sm}px; }
       `}</style>
     </div>
   );

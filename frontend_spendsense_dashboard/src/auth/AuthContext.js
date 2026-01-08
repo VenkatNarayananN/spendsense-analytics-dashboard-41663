@@ -1,9 +1,9 @@
-import React, { createContext, useCallback, useContext, useMemo, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { getSupabaseClient } from "../supabaseClient";
 import { generateSampleDataSeed } from "../lib/supabaseClient/seed";
 
 /**
- * AuthContext provides a minimal, placeholder authentication state for UI scaffolding.
- * This is intentionally dummy logic so the app remains fully functional without backend/Supabase.
+ * AuthContext is the single source of truth for Supabase auth session.
  */
 const AuthContext = createContext(null);
 
@@ -12,58 +12,116 @@ const AuthContext = createContext(null);
  */
 export function AuthProvider({ children }) {
   /**
-   * Placeholder auth state:
-   * - Defaults to "signed out"
-   * - Persists to localStorage so refreshes behave predictably during UI review.
+   * Auth state is derived from Supabase only.
+   * Pages should rely on `session` and `loading` from this context.
    */
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    try {
-      return window.localStorage.getItem("ss_isAuthed") === "true";
-    } catch {
-      return false;
-    }
-  });
+  const [loading, setLoading] = useState(true);
+  const [session, setSession] = useState(null);
+  const [supabaseConfigured, setSupabaseConfigured] = useState(true);
 
-  const signIn = useCallback(async () => {
-    setIsAuthenticated(true);
-    try {
-      window.localStorage.setItem("ss_isAuthed", "true");
-    } catch {
-      // ignore storage failures (private mode etc.)
+  useEffect(() => {
+    let alive = true;
+    let unsubscribe = null;
+
+    async function init() {
+      setLoading(true);
+      const supabase = await getSupabaseClient();
+
+      if (!supabase) {
+        if (!alive) return;
+        setSupabaseConfigured(false);
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+
+      setSupabaseConfigured(true);
+
+      const { data, error } = await supabase.auth.getSession();
+      if (!alive) return;
+
+      if (error) {
+        // Keep session null; surface error on Login page and/or protected pages.
+        setSession(null);
+        setLoading(false);
+      } else {
+        setSession(data?.session || null);
+        setLoading(false);
+      }
+
+      const { data: listener } = supabase.auth.onAuthStateChange((_event, newSession) => {
+        if (!alive) return;
+        setSession(newSession || null);
+      });
+
+      unsubscribe = () => listener?.subscription?.unsubscribe?.();
     }
-    return true;
+
+    init();
+
+    return () => {
+      alive = false;
+      try {
+        unsubscribe?.();
+      } catch {
+        // ignore
+      }
+    };
   }, []);
 
-  const signOut = useCallback(async () => {
-    setIsAuthenticated(false);
-    try {
-      window.localStorage.setItem("ss_isAuthed", "false");
-    } catch {
-      // ignore storage failures
+  // PUBLIC_INTERFACE
+  const signIn = useCallback(async (email, password) => {
+    /**
+     * Signs in with Supabase email/password.
+     */
+    const supabase = await getSupabaseClient();
+    if (!supabase) {
+      throw new Error(
+        "Supabase is not configured. Please set REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_KEY."
+      );
     }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return data?.session || null;
+  }, []);
+
+  // PUBLIC_INTERFACE
+  const signOut = useCallback(async () => {
+    /**
+     * Signs out the current user.
+     */
+    const supabase = await getSupabaseClient();
+    if (!supabase) return true;
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
     return true;
   }, []);
 
   // PUBLIC_INTERFACE
-  const generateSampleData = useCallback(async (options = {}) => {
-    /**
-     * Generates demo seed data in a safe, best-effort way.
-     * - Uses Supabase when configured + session exists + schema allows insert
-     * - Falls back to localStorage otherwise
-     *
-     * Returns: { ok, mode, message, error? }
-     */
-    return generateSampleDataSeed(options);
-  }, []);
+  const generateSampleData = useCallback(
+    async (options = {}) => {
+      /**
+       * Seeds sample data into Supabase for the current logged-in user.
+       * Note: seed.js still contains a guarded localStorage fallback, but SettingsPage
+       * will only expose this action when Supabase + session exist.
+       */
+      return generateSampleDataSeed(options);
+    },
+    []
+  );
 
   const value = useMemo(
     () => ({
-      isAuthenticated,
+      loading,
+      session,
+      user: session?.user || null,
+      isAuthenticated: !!session,
+      supabaseConfigured,
       signIn,
       signOut,
       generateSampleData,
     }),
-    [isAuthenticated, signIn, signOut, generateSampleData]
+    [generateSampleData, loading, session, signIn, signOut, supabaseConfigured]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -74,7 +132,7 @@ export function AuthProvider({ children }) {
  */
 export function useAuth() {
   /**
-   * Access the placeholder auth context.
+   * Access the authentication context.
    */
   const ctx = useContext(AuthContext);
   if (!ctx) {

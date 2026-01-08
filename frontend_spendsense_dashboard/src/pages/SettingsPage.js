@@ -13,7 +13,7 @@ export function SettingsPage() {
   const [anomalyPush, setAnomalyPush] = useState(false);
   const [profile, setProfile] = useState({ name: "Avery Chen", email: "avery@example.com" });
 
-  const { generateSampleData } = useAuth();
+  const { generateSampleData, supabaseConfigured, session } = useAuth();
 
   const [seedState, setSeedState] = useState({ status: "idle", message: "", mode: "" });
 
@@ -95,8 +95,8 @@ export function SettingsPage() {
               flexWrap: "wrap",
             }}
           >
-            <Badge tone="info">Saved locally (mock)</Badge>
-            <Button variant="secondary" size="sm">
+            <Badge tone="info">Saved locally (UI only)</Badge>
+            <Button variant="secondary" size="sm" disabled aria-disabled="true">
               Save changes
             </Button>
           </div>
@@ -129,42 +129,49 @@ export function SettingsPage() {
           </div>
         </Card>
 
-        <Card
-          title="Demo tools"
-          subtitle="Generate realistic sample transactions and alerts for previews and demos"
-        >
+        <Card title="Demo tools" subtitle="Generate realistic sample transactions and alerts for previews and demos">
           <div className="ss-demo">
             <div className="ss-demo__meta">
               <div className="ss-demo__title">Generate sample data</div>
               <div className="ss-demo__desc">
-                Seeds demo transactions + alerts into Supabase when available; otherwise saves a local demo seed.
+                Seeds demo transactions + alerts into Supabase for your signed-in user.
               </div>
             </div>
 
-            <div className="ss-demo__actions">
-              <Button
-                variant="primary"
-                onClick={onGenerateSampleData}
-                disabled={seedState.status === "working"}
-              >
-                {seedState.status === "working" ? "Generating…" : "Generate sample data"}
-              </Button>
+            {!supabaseConfigured ? (
+              <div className="ss-demo__hint">
+                Supabase is not configured in this environment. Set <strong>REACT_APP_SUPABASE_URL</strong> and{" "}
+                <strong>REACT_APP_SUPABASE_KEY</strong> to enable seeding.
+              </div>
+            ) : !session ? (
+              <div className="ss-demo__hint">Sign in to enable demo seeding.</div>
+            ) : (
+              <>
+                <div className="ss-demo__actions">
+                  <Button
+                    variant="primary"
+                    onClick={onGenerateSampleData}
+                    disabled={seedState.status === "working"}
+                  >
+                    {seedState.status === "working" ? "Generating…" : "Generate sample data"}
+                  </Button>
 
-              {seedState.message ? (
-                <div className="ss-demo__status" aria-live="polite">
-                  <Badge tone={seedTone}>
-                    {seedState.mode ? `${seedState.mode}: ` : ""}
-                    {seedState.message}
-                  </Badge>
+                  {seedState.message ? (
+                    <div className="ss-demo__status" aria-live="polite">
+                      <Badge tone={seedTone}>
+                        {seedState.message}
+                      </Badge>
+                    </div>
+                  ) : (
+                    <Badge tone="info">Supabase only</Badge>
+                  )}
                 </div>
-              ) : (
-                <Badge tone="info">Safe in demo mode</Badge>
-              )}
-            </div>
 
-            <div className="ss-demo__hint">
-              Tip: If Supabase tables/RLS aren’t configured, the app will gracefully fall back to local demo data.
-            </div>
+                <div className="ss-demo__hint">
+                  Tip: ensure your <code>transactions</code> and <code>alerts</code> tables exist and RLS permits inserts for this user.
+                </div>
+              </>
+            )}
           </div>
         </Card>
       </div>

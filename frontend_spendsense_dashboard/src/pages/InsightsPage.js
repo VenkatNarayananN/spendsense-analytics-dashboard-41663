@@ -1,13 +1,13 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Card } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { EmptyState } from "../components/ui/EmptyState";
 import { ChartSkeleton } from "../components/ui/Skeleton";
 import { BarChartPlaceholder, DonutChartPlaceholder } from "../components/charts";
-import { insights as baseInsights } from "../mockData";
 import { theme } from "../theme";
-import { useMockFetch } from "../hooks/useMockFetch";
 import { Button } from "../components/ui/Button";
+import { useAuth } from "../auth/AuthContext";
+import { listInsightsSourceTransactions } from "../lib/supabaseClient/db";
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -17,74 +17,138 @@ function uniq(arr) {
   return Array.from(new Set(arr)).sort((a, b) => String(a).localeCompare(String(b)));
 }
 
-function transformInsights(insights, timeRange, category) {
-  // Keep it mock, but deterministic so controls feel real.
-  // timeRange scales values slightly; category filters down to one item.
-  const factor = timeRange === "7d" ? 0.78 : timeRange === "30d" ? 1.0 : 1.18;
+function isoDateDaysAgo(daysAgo) {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return d.toISOString().slice(0, 10);
+}
 
-  let cats = insights.topCategories.map((c) => ({
-    ...c,
-    value: Math.round(c.value * factor),
-    changePct:
-      Math.round(
-        (c.changePct + (timeRange === "90d" ? 1.6 : timeRange === "7d" ? -0.8 : 0)) * 10
-      ) / 10,
-  }));
+function dateRangeForTimeRange(timeRange) {
+  if (timeRange === "7d") return { from: isoDateDaysAgo(7), to: isoDateDaysAgo(0) };
+  if (timeRange === "90d") return { from: isoDateDaysAgo(90), to: isoDateDaysAgo(0) };
+  return { from: isoDateDaysAgo(30), to: isoDateDaysAgo(0) };
+}
 
-  if (category !== "All") {
-    cats = cats.filter((c) => c.label === category);
+function sumByCategory(rows) {
+  const m = new Map();
+  for (const r of rows) {
+    const cat = r.category || "Uncategorized";
+    const amt = Number(r.amount || 0);
+    m.set(cat, (m.get(cat) || 0) + amt);
+  }
+  return Array.from(m.entries())
+    .map(([label, value]) => ({ label, value: Math.round(value) }))
+    .sort((a, b) => b.value - a.value);
+}
+
+function buildTrends(rows) {
+  // Keep trends simple and explainable without SQL/RPC:
+  // - Most frequent merchant
+  // - Pending count
+  // - Highest single transaction
+  if (!rows.length) return [];
+
+  const merchantCounts = new Map();
+  let pending = 0;
+  let maxTx = null;
+
+  for (const r of rows) {
+    const m = r.merchant || "Unknown";
+    merchantCounts.set(m, (merchantCounts.get(m) || 0) + 1);
+    if (r.status === "Pending") pending += 1;
+
+    const amt = Number(r.amount || 0);
+    if (!maxTx || amt > Number(maxTx.amount || 0)) maxTx = r;
   }
 
-  const trends = insights.trends.map((t, idx) => ({
-    ...t,
-    detail:
-      timeRange === "7d"
-        ? `Last 7 days: ${t.detail}`
-        : timeRange === "90d"
-          ? `Last 90 days: ${t.detail} (zoomed out)`
-          : `Last 30 days: ${t.detail}`,
-    // keep key stable-ish
-    label: `${t.label}${category !== "All" ? ` • ${category}` : ""}${idx === 0 ? "" : ""}`,
-  }));
+  const topMerchant = Array.from(merchantCounts.entries()).sort((a, b) => b[1] - a[1])[0];
 
-  return { topCategories: cats, trends };
+  return [
+    {
+      label: "Top merchant",
+      detail: topMerchant ? `${topMerchant[0]} (${topMerchant[1]} transactions in range)` : "Not enough data yet.",
+    },
+    {
+      label: "Pending transactions",
+      detail: pending ? `${pending} transaction(s) are still pending.` : "No pending transactions in this range.",
+    },
+    {
+      label: "Largest transaction",
+      detail: maxTx
+        ? `${maxTx.merchant || "Unknown"} • $${Number(maxTx.amount || 0).toFixed(2)}`
+        : "Not enough data yet.",
+    },
+  ];
 }
 
 /**
  * PUBLIC_INTERFACE
  */
 export function InsightsPage() {
+  const { session, supabaseConfigured } = useAuth();
+
   const [timeRange, setTimeRange] = useState("30d");
   const [category, setCategory] = useState("All");
 
-  const categories = useMemo(
-    () => ["All", ...uniq(baseInsights.topCategories.map((c) => c.label))],
-    []
-  );
+  const [rows, setRows] = useState([]);
+  const [fetchState, setFetchState] = useState({ loading: true, error: null });
 
-  const derived = useMemo(() => transformInsights(baseInsights, timeRange, category), [
-    timeRange,
-    category,
-  ]);
+  const load = useCallback(async () => {
+    if (!supabaseConfigured) {
+      setFetchState({ loading: false, error: new Error("Supabase is not configured.") });
+      setRows([]);
+      return;
+    }
+    if (!session?.user?.id) return;
 
-  const fetchState = useMockFetch(() => derived, [timeRange, category, derived.topCategories.length], {
-    delayMs: 520,
-  });
+    const { from, to } = dateRangeForTimeRange(timeRange);
+
+    setFetchState({ loading: true, error: null });
+    try {
+      const data = await listInsightsSourceTransactions({
+        userId: session.user.id,
+        fromDate: from,
+        toDate: to,
+      });
+      setRows(Array.isArray(data) ? data : []);
+      setFetchState({ loading: false, error: null });
+    } catch (e) {
+      setRows([]);
+      setFetchState({ loading: false, error: e });
+    }
+  }, [session?.user?.id, session, supabaseConfigured, timeRange]);
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    load();
+  }, [load, session?.user?.id]);
+
+  const categories = useMemo(() => {
+    const base = uniq(rows.map((r) => r.category).filter(Boolean));
+    return ["All", ...base];
+  }, [rows]);
+
+  const topCategories = useMemo(() => {
+    const base = sumByCategory(rows);
+    if (category === "All") return base.slice(0, 6);
+    return base.filter((c) => c.label === category);
+  }, [category, rows]);
+
+  const trends = useMemo(() => buildTrends(rows), [rows]);
 
   const reset = useCallback(() => {
     setTimeRange("30d");
     setCategory("All");
   }, []);
 
-  const empty =
-    !fetchState.loading && fetchState.data && fetchState.data.topCategories.length === 0;
+  const empty = !fetchState.loading && !fetchState.error && topCategories.length === 0;
 
   return (
     <div className="ss-page">
       <div className="ss-toolbar" aria-label="Insights filters">
         <div className="ss-toolbar__left">
           <div className="ss-toolbar__title">Insights</div>
-          <div className="ss-toolbar__subtitle">Adjust time range and focus category</div>
+          <div className="ss-toolbar__subtitle">Real-time summaries from your transactions</div>
         </div>
 
         <div className="ss-toolbar__right">
@@ -115,19 +179,33 @@ export function InsightsPage() {
           <Button variant="secondary" size="sm" onClick={reset} aria-label="Reset insights filters">
             Reset
           </Button>
+
+          <Button variant="ghost" size="sm" onClick={load} aria-label="Refresh insights">
+            Refresh
+          </Button>
+
+          <Badge tone="success">Live</Badge>
         </div>
       </div>
 
       <div className="ss-grid">
-        <Card title="Category Performance" subtitle="Top categories (mock)">
+        <Card title="Category Performance" subtitle="Top categories">
           <div className="ss-section">
             {fetchState.loading ? (
               <ChartSkeleton height={220} />
+            ) : fetchState.error ? (
+              <EmptyState
+                icon="⚠"
+                title="Unable to load insights"
+                description={fetchState.error?.message || "An unexpected error occurred while loading insights."}
+                primaryActionLabel="Retry"
+                onPrimaryAction={load}
+              />
             ) : empty ? (
               <EmptyState
                 icon="◷"
                 title="No category data for this selection"
-                description="Try selecting a different category or widening the time range."
+                description="Try widening the time range or generating some transactions."
                 primaryActionLabel="Reset"
                 onPrimaryAction={reset}
               />
@@ -135,32 +213,27 @@ export function InsightsPage() {
               <BarChartPlaceholder
                 title="Category Spend (placeholder)"
                 height={220}
-                data={(fetchState.data?.topCategories || []).map((c) => ({
-                  label: c.label,
-                  value: c.value,
-                }))}
+                data={topCategories.map((c) => ({ label: c.label, value: c.value }))}
               />
             )}
           </div>
 
-          {!fetchState.loading && !empty && (
+          {!fetchState.loading && !fetchState.error && !empty && (
             <div className="ss-cats">
-              {(fetchState.data?.topCategories || []).map((c) => (
+              {topCategories.map((c) => (
                 <div key={c.label} className="ss-cat">
                   <div className="ss-cat__left">
                     <div className="ss-cat__label">{c.label}</div>
                     <div className="ss-cat__bar">
                       <div
                         className="ss-cat__fill"
-                        style={{ width: `${clamp((c.value / 1600) * 100, 4, 100)}%` }}
+                        style={{ width: `${clamp((c.value / Math.max(1, topCategories[0]?.value || 1)) * 100, 4, 100)}%` }}
                       />
                     </div>
                     <div className="ss-cat__meta">{c.value.toLocaleString()} total</div>
                   </div>
                   <div className="ss-cat__right">
-                    <Badge tone={c.changePct >= 0 ? "success" : "error"}>
-                      {c.changePct >= 0 ? `+${c.changePct}%` : `${c.changePct}%`}
-                    </Badge>
+                    <Badge tone="info">Range {timeRange.toUpperCase()}</Badge>
                   </div>
                 </div>
               ))}
@@ -168,27 +241,24 @@ export function InsightsPage() {
           )}
         </Card>
 
-        <Card title="Trend Summaries" subtitle="Actionable patterns (mock)">
+        <Card title="Trend Summaries" subtitle="Actionable patterns">
           <div className="ss-section">
             {fetchState.loading ? (
+              <ChartSkeleton height={220} />
+            ) : fetchState.error ? (
               <ChartSkeleton height={220} />
             ) : (
               <DonutChartPlaceholder
                 title="Allocation (placeholder)"
                 height={220}
-                data={[
-                  { label: "Core", value: category === "All" ? 46 : 52 },
-                  { label: "Flex", value: category === "All" ? 28 : 24 },
-                  { label: "Future", value: category === "All" ? 18 : 16 },
-                  { label: "Other", value: category === "All" ? 8 : 8 },
-                ]}
+                data={topCategories.slice(0, 4).map((c) => ({ label: c.label, value: c.value }))}
               />
             )}
           </div>
 
-          {!fetchState.loading && (
+          {!fetchState.loading && !fetchState.error && (
             <div className="ss-trends">
-              {(fetchState.data?.trends || []).map((t) => (
+              {trends.map((t) => (
                 <div key={t.label} className="ss-trend">
                   <div className="ss-trend__title">{t.label}</div>
                   <div className="ss-trend__detail">{t.detail}</div>
